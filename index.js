@@ -2,16 +2,18 @@ import { Game } from './modules/Game.mjs';
 
 console.log(new Game());
 
-const express = require('express');
+import express from 'express';
+import http from 'http';
+import fs from 'fs';
+import { Server } from 'socket.io';
+
 const app = express();
-const http = require('http');
-const fs = require('fs');
 const reservedCharacters = new RegExp('^[\u0000-\u001F]*$', 'g');
 
 app.use(express.static('./public'));
 
 const server = http.createServer(app);
-const io = require('socket.io')(server);
+const io = new Server(server);
 const config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
 
 io.on('connection', function (socket) {
