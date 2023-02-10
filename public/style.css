@@ -44,6 +44,7 @@ textarea {
 	transition: 0.1s all cubic-bezier(0.17, 0.67, 0.83, 0.67);
 }
 .hexagonNode line:hover {
+	stroke: gray;
 	stroke-width: 20;
 }
 .hexagonNode .node {

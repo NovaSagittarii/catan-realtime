@@ -1,3 +1,7 @@
+import { Game } from './modules/Game.mjs';
+
+console.log(new Game());
+
 const express = require('express');
 const app = express();
 const http = require('http');
