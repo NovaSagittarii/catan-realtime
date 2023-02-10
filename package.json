@@ -1,0 +1,20 @@
+{
+  "name": "cypress-rtc",
+  "version": "1.0.0",
+  "description": "realtime catan",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "format": "npx prettier --write ."
+  },
+  "keywords": [
+    "sockets.io"
+  ],
+  "author": "NovaSagittarii",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "https": "^1.0.0",
+    "socket.io": "^4.6.0"
+  }
+}
