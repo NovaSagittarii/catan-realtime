@@ -2,7 +2,7 @@ import { Structure } from './Structure.mjs';
 
 let x = 0;
 class Edge extends Structure {
-	constructor(){
+	constructor() {
 		super();
 		this.id = x++;
 	}

@@ -2,18 +2,21 @@ import { StructureType } from './Structures.mjs';
 
 class Structure {
 	static StructureType = StructureType;
-	constructor(){
+	constructor() {
+		this.initialize();
+	}
+	initialize() {
 		this.owner = null;
 		this.structure = null;
 	}
-	build(who, what){
+	build(who, what) {
 		this.owner = who;
 		this.structure = what;
 	}
-	getOwner(){
+	getOwner() {
 		return this.owner;
 	}
-	getStructure(){
+	getStructure() {
 		return this.structure;
 	}
 }
