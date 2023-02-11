@@ -7,6 +7,17 @@ const hexagonGrid = new HexagonGrid({
 });
 document.body.append(hexagonGrid.getElement());
 
-console.log(hexagonGrid);
+socket = io({ transports: ['websocket'] });
+hexgrid = hexagonGrid;
 
-export { Hexagon, HexagonGrid };
+socket.on('sound', (file) => console.log('playsound', file));
+socket.on('notify', (message) => console.log('alert', message));
+socket.on('rooms', (rooms) => {
+	console.log('rooms', rooms);
+	socket.emit('join', rooms[0]);
+});
+// socket.on('room')
+
+socket.emit('rooms');
+
+// export { Hexagon, HexagonGrid };

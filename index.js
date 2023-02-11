@@ -1,6 +1,4 @@
-import { Game } from './modules/Game.mjs';
-
-console.log(new Game());
+import { GameRoom } from './modules/GameRoom.mjs';
 
 import express from 'express';
 import http from 'http';
@@ -16,12 +14,42 @@ const server = http.createServer(app);
 const io = new Server(server);
 const config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
 
+const rooms = {
+	kitchen: new GameRoom(io),
+};
+
+const players = {};
+
 io.on('connection', function (socket) {
 	var address = socket.handshake.address;
 
 	console.log(' > new connection < ' + address + ' cID: ' + socket.id);
-	socket.on('ping', () => {
-		console.log('pinged');
+	socket.on('join', (id) => {
+		const room = rooms[id];
+		if (!players[socket.id] && room) {
+			players[socket.id] = rooms[id];
+			room.join(socket);
+		}
+	});
+	socket.on('leave', () => {
+		if (players[socket.id]) {
+			rooms[id].leave(socket);
+			delete players[socket.id];
+		}
+	});
+	socket.on('start', () => {
+		if (players[socket.id]) players[socket.id].start(socket);
+	});
+	socket.on('rooms', () => {
+		socket.emit('rooms', Object.keys(rooms));
+	});
+	['build', 'roll', 'robber', 'act'].forEach((action) => {
+		socket.on(action, (data) => {
+			if (players[socket.id]) {
+				players[socket.id].handleEvent(socket, action, data);
+				console.log('EVENT', socket.id, action, data);
+			}
+		});
 	});
 	socket.on('disconnect', function (reason) {
 		console.log(` < disconnection! [ ${reason} ] cID: ${socket.id}`);

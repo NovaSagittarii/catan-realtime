@@ -40,6 +40,7 @@ class Hexagon {
 		hexagon.classList.add('hexagon');
 		div.append(hexagon, outline);
 
+		const nodes = [];
 		pts.forEach(([x, y], i) => {
 			const line = document.createElementNS(xmlns, 'line');
 			line.setAttribute('x1', x);
@@ -53,15 +54,31 @@ class Hexagon {
 			node.style.top = y + 'px';
 			node.classList.add('node');
 			div.append(node);
+			nodes.push(node);
 		});
 
 		this.setPosition(x, y);
 
 		this.label = document.createTextNode('');
 		div.append(this.label);
+
+		this.elements = {
+			hexagon,
+			lines: [...outline.children],
+			nodes,
+		};
 	}
 	getElement() {
 		return this.htmlElement;
+	}
+	getHexagon() {
+		return this.elements.hexagon;
+	}
+	getEdge(k) {
+		return this.elements.lines[k];
+	}
+	getVertex(k) {
+		return this.elements.nodes[k];
 	}
 	setPosition(x, y) {
 		this.htmlElement.style.left = x + 'px';

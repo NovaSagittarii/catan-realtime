@@ -13,6 +13,15 @@ class ResourceNode {
 			];
 		this.robberExpire = -1;
 	}
+	setRobber(until) {
+		this.robberExpire = until;
+	}
+	clearRobber() {
+		this.robberExpire = -1;
+	}
+	isActive(time) {
+		return this.robberExpire > time;
+	}
 }
 
 export { ResourceNode };

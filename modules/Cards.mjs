@@ -1,3 +1,5 @@
+// brick, lumber, wool, grain, ore
+
 const Cards = {
 	knight: 14,
 	point: 5,
@@ -11,5 +13,6 @@ const CardType = {};
 CardName.forEach((x, i) => (CardType[x.toUpperCase()] = i));
 const CardCount = CardName.length;
 const InitialCard = Object.values(Cards);
+const CardCost = [0, 0, 1, 1, 1];
 
-export { CardName, CardType, CardCount, InitialCard };
+export { CardName, CardType, CardCount, InitialCard, CardCost };

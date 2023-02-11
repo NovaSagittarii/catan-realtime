@@ -6,8 +6,11 @@ import { Player } from './Player.mjs';
 import { InitialResource } from './Resources.mjs';
 import { InitialCard } from './Cards.mjs';
 
+import { StructureType } from './Structures.mjs';
+
 class Game {
 	constructor() {
+		this.time = 0;
 		this.grid = [...new Array(5)].map(() => [...new Array(5)]);
 		const N = 5;
 		const p = 3;
@@ -27,13 +30,13 @@ class Game {
 			for (let j = 0; j < N; j++) {
 				this.grid[i][j] = [
 					new ResourceNode(),
-					...surroundings.map(
+					surroundings.map(
 						([dx, dy, dz]) =>
 							vertices[
 								(i + dy + 1) * (N + 2) * p + (j + dx + 1) * p + (dz % p)
 							],
 					),
-					...surroundings.map(
+					surroundings.map(
 						([dx, dy, dz]) =>
 							edges[(i + dy + 1) * (N + 2) * p + (j + dx + 1) * p + (dz % p)],
 					),
@@ -57,11 +60,51 @@ class Game {
 		this.cards = new Array(...InitialCard);
 		// this.cardOwners = [...new Array(StatusCount)].map(() => null);
 		for (const row of this.grid) {
-			for (const [node, ...structures] of row) {
+			for (const [node, vertices, edges] of row) {
 				node.initialize();
-				structures.forEach((x) => x.initialize());
+				for (const structure of [...vertices, ...edges]) structure.initialize();
 			}
 		}
+	}
+	getNode(x, y) {
+		if (!(y in this.grid) || !(x in this.grid[y])) return null;
+		return this.grid[y][x][0];
+	}
+	getVertex(x, y, k) {
+		// console.log('getvertex', x, y, k);
+		if (!(y in this.grid) || !(x in this.grid[y])) return null;
+		if (k < 0 || k > 6) return null;
+		return this.grid[y][x][1][k];
+	}
+	getEdge(x, y, k) {
+		if (!(y in this.grid) || !(x in this.grid[y])) return null;
+		if (k < 0 || k > 6) return null;
+		return this.grid[y][x][2][k];
+	}
+	getTime() {
+		return this.time;
+	}
+	processRoll(x, t) {
+		for (const row of this.grid) {
+			for (const [node, vertices, edges] of row) {
+				for (const vertex of vertices) {
+					if (node.trigger === x && node.isActive(t)) {
+						if (vertex.getOwner()) {
+							vertex.getOwner().resources[node.resourceType] +=
+								node.structure === StructureType.CITY_LARGE ? 2 : 1;
+							// TODO : handle limited resources (toss results into array and shuffle, process in order)
+						}
+					}
+				}
+			}
+		}
+	}
+	startTicker(tickerInterval) {
+		clearInterval(this.tickerInterval);
+		this.tickerInterval = setInterval(this.tick, tickerInterval);
+	}
+	tick() {
+		this.time += 1;
 	}
 }
 
