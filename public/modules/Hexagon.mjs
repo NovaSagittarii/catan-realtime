@@ -1,7 +1,9 @@
-class Hexagon {
+import { Div } from './HTMLElements.mjs';
+
+class Hexagon extends Div {
 	constructor(x = 0, y = 0) {
-		const div = (this.htmlElement = document.createElement('div'));
-		div.classList.add('hexagonNode');
+		super('hexagonNode');
+		const div = this.htmlElement;
 		//	 <svg height='200' width='500'>
 		// <polygon points='200,10 250,190 160,210' style='stroke:purple;stroke-width:1' />
 		// </svg>
@@ -61,8 +63,8 @@ class Hexagon {
 
 		const labelDiv = document.createElement('div');
 		labelDiv.classList.add('label');
-		labelDiv.style.left = 100/2 + 'px';
-		labelDiv.style.top = (bottom-top)/2 + 'px';
+		labelDiv.style.left = 100 / 2 + 'px';
+		labelDiv.style.top = (bottom - top) / 2 + 'px';
 		this.label = document.createTextNode('');
 		labelDiv.append(this.label);
 		div.append(labelDiv);
@@ -72,9 +74,6 @@ class Hexagon {
 			lines: [...outline.children],
 			nodes,
 		};
-	}
-	getElement() {
-		return this.htmlElement;
 	}
 	getHexagon() {
 		return this.elements.hexagon;
@@ -93,10 +92,18 @@ class Hexagon {
 		this.label.nodeValue = t;
 	}
 	// t: trigger, r: resource
-	applyConfiguration({t, r}){
-		const ResourceColors = ["#aa0000", "#00aa00", "#0000aa", "#5555aa", "#aa5555"];
-		this.setLabel(t);
-		this.elements.hexagon.querySelector("polygon").style.fill = ResourceColors[r];
+	applyConfiguration({ t, r }) {
+		const ResourceColors = [
+			'#aa0000',
+			'#00aa00',
+			'#0000aa',
+			'#5555aa',
+			'#aa5555',
+		];
+		const pips = '\u2022'.repeat(6 - Math.abs(7 - t));
+		this.setLabel(`${t}\n${pips}`);
+		this.elements.hexagon.querySelector('polygon').style.fill =
+			ResourceColors[r];
 	}
 }
 

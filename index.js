@@ -24,11 +24,12 @@ io.on('connection', function (socket) {
 	var address = socket.handshake.address;
 
 	console.log(' > new connection < ' + address + ' cID: ' + socket.id);
-	socket.on('join', (id) => {
+	socket.on('join', ({ id, name }) => {
 		const room = rooms[id];
-		if (!players[socket.id] && room) {
+		name = name.replace(reservedCharacters, '');
+		if (!players[socket.id] && room && name) {
 			players[socket.id] = rooms[id];
-			room.join(socket);
+			room.join(socket, name);
 		}
 	});
 	socket.on('leave', () => {

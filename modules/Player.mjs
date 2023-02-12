@@ -3,9 +3,11 @@ import { InitialStructure } from './Structures.mjs';
 import { InitialCard } from './Cards.mjs';
 
 class Player {
-	constructor(socket, blueprints) {
+	constructor(socket, name, blueprints) {
 		this.socket = socket;
+		this.name = name;
 		this.initialize(blueprints);
+		this.id = null;
 	}
 	initialize(blueprints = InitialStructure) {
 		this.points = 0;
@@ -32,6 +34,24 @@ class Player {
 	canRoll(t) {
 		const { robber, road, city_small } = this.queued;
 		return robber <= 0 && road <= 0 && city_small <= 0 && this.nextRoll < t;
+	}
+	setId(id) {
+		this.id = id;
+	}
+	export() {
+		return {
+			p: this.points,
+			i: this.id,
+			n: this.name,
+			t: this.nextRoll,
+			ql: this.queued.roll,
+			qb: this.queued.robber,
+			qa: this.queued.road,
+			qc: this.queued.city_small,
+			r: this.resources,
+			b: this.blueprints,
+			c: this.cards,
+		};
 	}
 }
 

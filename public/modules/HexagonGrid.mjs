@@ -1,12 +1,15 @@
+import { Div } from './HTMLElements.mjs';
 import { Hexagon } from './Hexagon.mjs';
 
-class HexagonGrid {
+class HexagonGrid extends Div {
 	constructor({ minWidth, maxWidth }) {
-		const div = (this.htmlElement = document.createElement('div'));
-		div.classList.add('hexagonGrid');
+		super('hexagonGrid');
+		const div = this.htmlElement;
 
 		const k = maxWidth - minWidth;
-		this.grid = [...new Array(2*k+1)].map(() => [...new Array(maxWidth)].map(() => null));
+		this.grid = [...new Array(2 * k + 1)].map(() =>
+			[...new Array(maxWidth)].map(() => null),
+		);
 		for (let i = -k; i <= k; i++) {
 			for (let j = 1; j <= maxWidth - Math.abs(i); j++) {
 				const x = Math.abs(i) / 2 + j - 1;
@@ -36,20 +39,20 @@ class HexagonGrid {
 			}
 		}
 	}
-	getElement() {
-		return this.htmlElement;
-	}
 	process(x, y, z) {
 		console.log(x, y, z);
 	}
-	applyConfiguration(grid){
-		for(let i = 0; i < grid.length; i ++){
-			for(let j = 0; j < grid[i].length; j ++){
-				if(grid[i][j] !== null){
+	applyConfiguration(grid) {
+		for (let i = 0; i < grid.length; i++) {
+			for (let j = 0; j < grid[i].length; j++) {
+				if (grid[i][j] !== null) {
 					this.grid[i][j].applyConfiguration(grid[i][j]);
 				}
 			}
 		}
+	}
+	sync({ x, y, z, building, playerId }) {
+		console.log('hexgrid sync', x, y, z, building, playerId);
 	}
 }
 

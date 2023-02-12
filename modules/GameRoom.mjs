@@ -23,13 +23,13 @@ class GameRoom {
 		this.state = GameRoom.RoomState.OPEN;
 		this.configuration = new GameRoomConfiguration();
 		this.players = {};
+		this.playersJoined = 0;
 		this.host = null;
 		this.game = new Game();
 		this.io = io;
 	}
-	initialize(){
+	initialize() {
 		this.state = GameRoom.RoomState.OPEN;
-		this.players = {};
 		this.host = null;
 		this.game.initialize();
 	}
@@ -55,15 +55,20 @@ class GameRoom {
 			const configuration = {
 				g: grid,
 			};
-			for(const { socket } of Object.values(this.players)){
-				socket.emit("configuration", configuration);
-			}
+			const playerData = Object.values(this.players).map((x) => x.export());
+			this.broadcast('configuration', configuration);
+			this.broadcast('playerData', playerData);
 		}
 	}
-	join(socket) {
+	broadcast(event, data) {
+		for (const { socket } of Object.values(this.players))
+			socket.emit(event, data);
+	}
+	join(socket, name) {
 		if (this.state !== GameRoom.RoomState.OPEN)
 			return this.protocolViolation(socket, 'join fail - room is not open');
-		this.players[socket.id] = new Player(socket);
+		this.players[socket.id] = new Player(socket, name);
+		this.players[socket.id].setId(this.playersJoined++);
 		if (Object.keys(this.players).length <= 1) this.reassignHost();
 	}
 	leave(socket) {
@@ -71,7 +76,7 @@ class GameRoom {
 		delete this.players[socket.id];
 		if (needsNewHost) this.reassignHost();
 		console.log(this.players);
-		if(Object.keys(this.players).length === 0){
+		if (Object.keys(this.players).length === 0) {
 			console.log('>> room <%s> is empty -- game reset', this.name);
 			this.initialize();
 		}
@@ -83,7 +88,11 @@ class GameRoom {
 				'event fail - game has not started',
 			);
 		const player = this.players[socket.id];
-		if( !player ) return this.protocolViolation( socket, 'event fail - player is not in game');
+		if (!player)
+			return this.protocolViolation(
+				socket,
+				'event fail - player is not in game',
+			);
 		switch (event) {
 			case 'build': {
 				const { x, y, z, building } = data;
@@ -253,6 +262,8 @@ class GameRoom {
 				break;
 			}
 		}
+		// sync player who initiated the event (TODO: update things affected by action)
+		this.broadcast('playerData', [player.export()]);
 	}
 	processRolls() {
 		for (const player of this.players) {
