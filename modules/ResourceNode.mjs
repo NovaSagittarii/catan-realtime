@@ -22,6 +22,11 @@ class ResourceNode {
 	isActive(time) {
 		return this.robberExpire > time;
 	}
+	export(){
+		const t = this.trigger;
+		const r = this.resourceType;
+		return { t, r };
+	}
 }
 
 export { ResourceNode };

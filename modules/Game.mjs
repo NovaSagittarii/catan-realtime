@@ -11,6 +11,7 @@ import { StructureType } from './Structures.mjs';
 class Game {
 	constructor() {
 		this.time = 0;
+		this.tickerInterval = null;
 		this.grid = [...new Array(5)].map(() => [...new Array(5)]);
 		const N = 5;
 		const p = 3;
@@ -65,6 +66,7 @@ class Game {
 				for (const structure of [...vertices, ...edges]) structure.initialize();
 			}
 		}
+		clearInterval(this.tickerInterval);
 	}
 	getNode(x, y) {
 		if (!(y in this.grid) || !(x in this.grid[y])) return null;
@@ -83,6 +85,19 @@ class Game {
 	}
 	getTime() {
 		return this.time;
+	}
+	getResourceConfiguration(){
+		// 2-4, to 0-2 (getnode and edge and vertex)
+		// TODO : handle general case
+		const N = 5;
+		const midpoint = Math.floor(N/2);
+		const grid = [...new Array(N)].map((_, i) => [...new Array(N)].map((_, j) => {
+			const left = Math.max(0, midpoint-i);
+			const right = N-1 + Math.min(0, +midpoint-i);
+			if(j < left || j > right) return null;
+			return this.getNode(j, i).export();
+		}));
+		return grid;
 	}
 	processRoll(x, t) {
 		for (const row of this.grid) {

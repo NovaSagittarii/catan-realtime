@@ -27,6 +27,12 @@ textarea {
 .hexagonNode svg {
 	position: absolute;
 }
+.hexagonNode .label {
+	position: absolute;
+	text-align: center;
+	transform: translate(-50%, -50%);
+	filter: drop-shadow(0px 0px 2px #ffffff);
+}
 .hexagon {
 	transform: scale(0.8, 0.8);
 	pointer-events: none;

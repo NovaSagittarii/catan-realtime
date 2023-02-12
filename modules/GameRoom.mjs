@@ -27,6 +27,12 @@ class GameRoom {
 		this.game = new Game();
 		this.io = io;
 	}
+	initialize(){
+		this.state = GameRoom.RoomState.OPEN;
+		this.players = {};
+		this.host = null;
+		this.game.initialize();
+	}
 	start(socket) {
 		if (this.host !== this.players[socket.id])
 			return this.protocolViolation(
@@ -44,6 +50,14 @@ class GameRoom {
 		if (this.state !== GameRoom.RoomState.IN_PROGRESS) {
 			this.state = GameRoom.RoomState.IN_PROGRESS;
 			this.game.startTicker(this.configuration.TICKER_INTERVAL);
+			const grid = this.game.getResourceConfiguration();
+			// console.log(grid);
+			const configuration = {
+				g: grid,
+			};
+			for(const { socket } of Object.values(this.players)){
+				socket.emit("configuration", configuration);
+			}
 		}
 	}
 	join(socket) {
@@ -56,6 +70,11 @@ class GameRoom {
 		const needsNewHost = this.players[socket.id] === this.host;
 		delete this.players[socket.id];
 		if (needsNewHost) this.reassignHost();
+		console.log(this.players);
+		if(Object.keys(this.players).length === 0){
+			console.log('>> room <%s> is empty -- game reset', this.name);
+			this.initialize();
+		}
 	}
 	handleEvent(socket, event, data) {
 		if (this.state !== GameRoom.RoomState.IN_PROGRESS)
@@ -64,6 +83,7 @@ class GameRoom {
 				'event fail - game has not started',
 			);
 		const player = this.players[socket.id];
+		if( !player ) return this.protocolViolation( socket, 'event fail - player is not in game');
 		switch (event) {
 			case 'build': {
 				const { x, y, z, building } = data;
@@ -258,7 +278,7 @@ class GameRoom {
 		console.log(
 			'new host for room <%s> -- <%s>',
 			this.name,
-			this.host.socket.id,
+			this.host?.socket.id,
 		);
 	}
 }

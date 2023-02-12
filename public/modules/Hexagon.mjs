@@ -59,8 +59,13 @@ class Hexagon {
 
 		this.setPosition(x, y);
 
+		const labelDiv = document.createElement('div');
+		labelDiv.classList.add('label');
+		labelDiv.style.left = 100/2 + 'px';
+		labelDiv.style.top = (bottom-top)/2 + 'px';
 		this.label = document.createTextNode('');
-		div.append(this.label);
+		labelDiv.append(this.label);
+		div.append(labelDiv);
 
 		this.elements = {
 			hexagon,
@@ -86,6 +91,12 @@ class Hexagon {
 	}
 	setLabel(t) {
 		this.label.nodeValue = t;
+	}
+	// t: trigger, r: resource
+	applyConfiguration({t, r}){
+		const ResourceColors = ["#aa0000", "#00aa00", "#0000aa", "#5555aa", "#aa5555"];
+		this.setLabel(t);
+		this.elements.hexagon.querySelector("polygon").style.fill = ResourceColors[r];
 	}
 }
 

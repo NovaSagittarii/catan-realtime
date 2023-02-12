@@ -32,8 +32,9 @@ io.on('connection', function (socket) {
 		}
 	});
 	socket.on('leave', () => {
-		if (players[socket.id]) {
-			rooms[id].leave(socket);
+		const room = players[socket.id];
+		if (room) {
+			room.leave(socket);
 			delete players[socket.id];
 		}
 	});
@@ -53,6 +54,11 @@ io.on('connection', function (socket) {
 	});
 	socket.on('disconnect', function (reason) {
 		console.log(` < disconnection! [ ${reason} ] cID: ${socket.id}`);
+		const room = players[socket.id];
+		if (room) {
+			room.leave(socket);
+			delete players[socket.id];
+		}
 	});
 });
 
