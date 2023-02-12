@@ -24,6 +24,7 @@ StructureName.forEach(
 	(x, i) =>
 		(StructureType[x.toUpperCase()] = i | (x in EdgeStructures ? 8 : 0)),
 );
+console.log(StructureType);
 const StructureCount = StructureName.length;
 const InitialStructure = Object.values(Structures).map(
 	({ initial }) => initial,

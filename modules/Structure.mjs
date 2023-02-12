@@ -1,9 +1,11 @@
 import { StructureType } from './Structures.mjs';
 
+let x = 0;
 class Structure {
 	static StructureType = StructureType;
 	constructor() {
 		this.initialize();
+		this.id = x++;
 	}
 	initialize() {
 		this.owner = null;
@@ -18,6 +20,11 @@ class Structure {
 	}
 	getStructure() {
 		return this.structure;
+	}
+	export() {
+		const o = this.owner?.id;
+		const s = this.structure;
+		return { o, s };
 	}
 }
 

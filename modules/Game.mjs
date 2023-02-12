@@ -18,10 +18,21 @@ class Game {
 		const vertices = [...new Array((N + 2) ** 2 * p)].map(() => new Vertex());
 		const edges = [...new Array((N + 2) ** 2 * p)].map(() => new Edge());
 
-		const surroundings = [
+		// there are 2 unique vertices per hexagon (I SHOULDVE REALIZED THIS EARLIER)
+		const vertexSurroundings = [
+			[0, 0, 0], // lower right node (on client)
+			[0, 0, 1], // lower center node (on client)
+			[-1, 0, 0],
+			[-1, 1, 1],
+			[-1, 1, 0],
+			[0, 1, 1],
+		];
+
+		// there are 3 unique edges per hexagon
+		const edgeSurroundings = [
 			[1, -1, 3], // go Upright, use Downleft line
-			[1, 0, 4],
-			[0, 1, 5],
+			[0, -1, 4],
+			[-1, 0, 5],
 			[0, 0, 0],
 			[0, 0, 1],
 			[0, 0, 2],
@@ -31,13 +42,13 @@ class Game {
 			for (let j = 0; j < N; j++) {
 				this.grid[i][j] = [
 					new ResourceNode(),
-					surroundings.map(
+					vertexSurroundings.map(
 						([dx, dy, dz]) =>
 							vertices[
 								(i + dy + 1) * (N + 2) * p + (j + dx + 1) * p + (dz % p)
 							],
 					),
-					surroundings.map(
+					edgeSurroundings.map(
 						([dx, dy, dz]) =>
 							edges[(i + dy + 1) * (N + 2) * p + (j + dx + 1) * p + (dz % p)],
 					),
@@ -45,14 +56,11 @@ class Game {
 			}
 		}
 
-		// console.log(
-		// 	this.grid.map(row =>
-		// 		row.map(node =>
-		// 			node.slice(7, 13)
-		// 				.map(x => x?.id||"?").join(' ')
-		// 		)
-		// 	)
-		// );
+		console.log(
+			this.grid.map((row) =>
+				row.map((node) => node[2].map((x) => x?.id || '?').join(' ')),
+			),
+		);
 
 		this.initialize();
 	}

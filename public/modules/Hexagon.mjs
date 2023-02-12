@@ -52,9 +52,9 @@ class Hexagon extends Div {
 			outline.appendChild(line);
 
 			const node = document.createElement('div');
-			node.style.left = x + 'px';
-			node.style.top = y + 'px';
-			node.classList.add('node');
+			node.style.left = x.toFixed(0) + 'px';
+			node.style.top = y.toFixed(0) + 'px';
+			node.classList.add('node', 'nullStructure');
 			div.append(node);
 			nodes.push(node);
 		});
@@ -63,8 +63,8 @@ class Hexagon extends Div {
 
 		const labelDiv = document.createElement('div');
 		labelDiv.classList.add('label');
-		labelDiv.style.left = 100 / 2 + 'px';
-		labelDiv.style.top = (bottom - top) / 2 + 'px';
+		labelDiv.style.left = (100 / 2).toFixed(0) + 'px';
+		labelDiv.style.top = ((bottom - top) / 2).toFixed(0) + 'px';
 		this.label = document.createTextNode('');
 		labelDiv.append(this.label);
 		div.append(labelDiv);
@@ -104,6 +104,32 @@ class Hexagon extends Div {
 		this.setLabel(`${t}\n${pips}`);
 		this.elements.hexagon.querySelector('polygon').style.fill =
 			ResourceColors[r];
+	}
+	sync(z, owner, structure) {
+		const PlayerColors = ['#4287f5'];
+		// console.log('hexnode.sync', {z, owner, structure});
+		if (structure & 16)
+			return; // sync hexagon (but you dont build on it -- use applyConfiguration to set robber instead)
+		else if (structure & 8) {
+			// sync edge
+			const edge = this.getEdge(z);
+			// console.log('edge', edge);
+			edge.style.stroke = PlayerColors[owner % PlayerColors.length];
+		} else {
+			// sync vertex
+			const vertex = this.getVertex(z);
+			// console.log('vertex', vertex);
+			vertex.style.background = PlayerColors[owner % PlayerColors.length];
+			switch (structure) {
+				case 1: // settlement
+					vertex.classList.remove('nullStructure');
+					vertex.classList.add('citySmall');
+					break;
+				case 2: // city
+					vertex.classList.add('cityLarge');
+					vertex.classList.remove('citySmall');
+			}
+		}
 	}
 }
 

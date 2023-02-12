@@ -94,6 +94,19 @@ class GameRoom {
 				'event fail - player is not in game',
 			);
 		switch (event) {
+			case 'ask': {
+				console.log(data);
+				const { x, y, z } = data;
+				const side = z & 7;
+				const node = !!(z & 16);
+				const edge = !!(z & 8);
+				if (node) socket.emit('ans', this.game.getNode(x, y).export());
+				else if (edge)
+					socket.emit('ans', this.game.getEdge(x, y, side).export());
+				else
+					socket.emit('ans', this.game.getVertex(x, y, side).export());
+				break;
+			}
 			case 'build': {
 				const { x, y, z, building } = data;
 				const side = z & 7;
@@ -126,7 +139,7 @@ class GameRoom {
 						'Build fail - insufficient resources',
 					);
 
-				console.log(player.queued, player.resources);
+				// console.log(player.queued, player.resources);
 				switch (building) {
 					case StructureType.ROAD: {
 						location = this.game.getEdge(x, y, side);
@@ -197,6 +210,16 @@ class GameRoom {
 				if (sufficientResources)
 					StructureCost[building].forEach((x, i) => (player.resources[i] -= x));
 				this.build(location, player, building);
+				// update everyone something new is built
+				this.broadcast('gridData', [
+					{
+						x,
+						y,
+						z,
+						b: building,
+						i: player.id,
+					},
+				]);
 				break;
 			}
 			case 'roll': {

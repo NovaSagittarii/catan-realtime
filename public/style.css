@@ -47,26 +47,29 @@ textarea {
 .hexagonNode line {
 	position: absolute;
 	pointer-events: auto;
-	stroke: black;
+	stroke: #dddddd;
 	stroke-width: 3;
 	transition: 0.1s all cubic-bezier(0.17, 0.67, 0.83, 0.67);
 }
 .hexagonNode line:hover {
-	stroke: gray;
 	stroke-width: 20;
 }
 .hexagonNode .node {
 	transform: translate(-50%, -50%);
 	width: 20px;
 	height: 20px;
-	background: black;
 	position: absolute;
 	border-radius: 50%;
 	pointer-events: auto;
 	transition: 0.2s all cubic-bezier(0.17, 0.67, 0.83, 0.67);
 }
-.hexagonNode .node:hover {
-	background: grey;
+.hexagonNode .nullStructure {
+	background: #dddddd;
+}
+.hexagonNode .citySmall {
+	opacity: 1;
+}
+.hexagonNode .nullStructure:hover {
 	width: 25px;
 	height: 25px;
 	border-radius: 0;

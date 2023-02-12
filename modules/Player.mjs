@@ -15,8 +15,8 @@ class Player {
 		this.queued = {
 			roll: false,
 			robber: 0,
-			road: 2,
-			city_small: 2,
+			road: 2 && 2000,
+			city_small: 2 && 2000,
 		};
 		this.resources = InitialResource.map(() => 0);
 		this.blueprints = new Array(...blueprints);

@@ -4,6 +4,11 @@ import { PlayerDisplay } from './PlayerDisplay.mjs';
 const hexagonGrid = new HexagonGrid({
 	minWidth: 3,
 	maxWidth: 5,
+	callbacks: {
+		node: (x, y, z) => processInput('node', x, y, z),
+		vertex: (x, y, z) => processInput('vertex', x, y, z),
+		edge: (x, y, z) => processInput('edge', x, y, z),
+	},
 });
 
 const playerDisplay = new PlayerDisplay();
@@ -13,6 +18,33 @@ document.body.append(hexagonGrid.getElement(), playerDisplay.getElement());
 socket = io({ transports: ['websocket'] });
 hexgrid = hexagonGrid;
 
+const STRUCTURE = {
+	CITY_SMALL: 1,
+	CITY_LARGE: 2,
+	ROAD: 8,
+};
+function processInput(type, x, y, z) {
+	console.log('processInput', { type, x, y, z });
+	switch (type) {
+		case 'node': {
+			// TODO : robber
+			break;
+		}
+		case 'vertex': {
+			socket.emit('build', { x, y, z, building: STRUCTURE.CITY_SMALL });
+			break;
+		}
+		case 'edge': {
+			socket.emit('build', { x, y, z, building: STRUCTURE.ROAD });
+			break;
+		}
+	}
+}
+function query(x, y, z) {
+	socket.emit('ask', { x, y, z });
+}
+
+socket.on('ans', (data) => console.log('response', data));
 socket.on('sound', (file) => console.log('playsound', file));
 socket.on('notify', (message) => console.log('alert', message));
 socket.on('rooms', (rooms) => {
