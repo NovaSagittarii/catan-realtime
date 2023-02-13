@@ -1,5 +1,10 @@
 import { HexagonGrid } from './HexagonGrid.mjs';
 import { PlayerDisplay } from './PlayerDisplay.mjs';
+import { Button } from './HTMLElements.mjs';
+
+const configuration = {
+	host: null,
+};
 
 const hexagonGrid = new HexagonGrid({
 	minWidth: 3,
@@ -17,6 +22,12 @@ document.body.append(hexagonGrid.getElement(), playerDisplay.getElement());
 
 socket = io({ transports: ['websocket'] });
 hexgrid = hexagonGrid;
+
+const buttonStartGame = new Button('Start Game', ['startGame'], () =>
+	socket.emit('start'),
+);
+const buttonRoll = new Button('Roll', ['rollDice'], () => socket.emit('roll'));
+document.body.append(buttonStartGame.getElement(), buttonRoll.getElement());
 
 const STRUCTURE = {
 	CITY_SMALL: 1,
@@ -55,7 +66,7 @@ socket.on('rooms', (rooms) => {
 	});
 
 	setTimeout(() => {
-		socket.emit('start');
+		// socket.emit('start');
 		// for (let i = 0; i < 3; i++)
 		// 	socket.emit('build', {
 		// 		x: 2,
@@ -66,8 +77,16 @@ socket.on('rooms', (rooms) => {
 	}, 100);
 });
 // socket.on('room')
-socket.on('configuration', ({ g }) => {
-	hexgrid.applyConfiguration(g);
+socket.on('configuration', ({ g, h }) => {
+	if (g !== undefined) hexgrid.applyConfiguration(g);
+	if (h !== undefined) {
+		configuration.host = h;
+		playerDisplay.setHost(h);
+	}
+});
+socket.on('id', (id) => {
+	configuration.id = id;
+	playerDisplay.setSelf(id);
 });
 socket.on('playerData', (playerData) => {
 	for (const player of playerData) {
@@ -83,6 +102,12 @@ socket.on('gridData', (gridData) => {
 		const [building, playerId] = [b, i];
 		hexgrid.sync({ x, y, z, building, playerId });
 	}
+});
+socket.on('roll', (value) => {
+	console.log(value);
+});
+socket.on('time', (time) => {
+	playerDisplay.updateTime(time);
 });
 
 socket.emit('rooms');

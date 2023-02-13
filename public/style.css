@@ -19,7 +19,9 @@ textarea {
 /* HexagonGrid.mjs Hexagon.mjs */
 .hexagonGrid {
 	position: relative;
-	margin: 20px;
+	/*margin: 20px;*/
+	top: 20px;
+	left: 20px;
 }
 .hexagonNode {
 	position: absolute;
@@ -113,4 +115,34 @@ textarea {
 }
 .textAttribute {
 	float: right;
+}
+.playerHost > .playerName > .attributeLabel {
+	color: red;
+}
+.playerSelf > .playerName > .textAttribute {
+	font-weight: bold;
+}
+
+.bar {
+	background: rgba(0, 0, 0, 0.5);
+	display: block;
+	margin-top: 0.5em;
+	height: 0.3em;
+	transition: 0.2s all cubic-bezier(0.17, 0.67, 0.83, 0.67);
+}
+.bar.barComplete {
+	background: rgb(142, 230, 115);
+	background: linear-gradient(
+		90deg,
+		rgba(142, 230, 115, 1) 0%,
+		rgba(54, 230, 0, 1) 100%
+	);
+}
+
+/* coding in css :^) */
+button.startGame {
+	display: none;
+}
+:has(.panel.playerHost.playerSelf) button.startGame {
+	display: block !important;
 }

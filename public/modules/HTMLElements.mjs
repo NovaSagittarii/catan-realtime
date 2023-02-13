@@ -11,5 +11,12 @@ class Span extends HTMLElement {
 		super('span', ...classNames);
 	}
 }
+class Button extends HTMLElement {
+	constructor(label, classNames, onclick) {
+		super('button', ...classNames);
+		this.htmlElement.addEventListener('click', onclick);
+		this.htmlElement.append(document.createTextNode(label));
+	}
+}
 
-export { HTMLElement, Div, Span };
+export { HTMLElement, Div, Span, Button };

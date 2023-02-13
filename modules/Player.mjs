@@ -18,15 +18,16 @@ class Player {
 			road: 2,
 			city_small: 2,
 		};
-		this.resources = InitialResource.map(() => 2000);
+		this.resources = InitialResource.map(() => 0);
 		this.blueprints = new Array(...blueprints);
 		this.cards = InitialCard.map(() => 0);
 	}
 	requestRoll() {
 		this.queued.roll = true;
 	}
-	clearRollRequest() {
+	clearRollRequest(newTime) {
 		this.queued.roll = false;
+		this.nextRoll = newTime;
 	}
 	requestedRoll() {
 		return this.queued.roll;

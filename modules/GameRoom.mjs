@@ -5,11 +5,13 @@ import { StructureType, StructureCost } from './Structures.mjs';
 import { CardType, CardCost } from './Cards.mjs';
 
 function GameRoomConfiguration() {
-	const second = 60; // 1 second = x frames
-	this.ROBBER_DURATION = 25 * second;
-	this.PLENTY_BONUS = 1;
-
+	// units are in ticks (1000/TICKER_INTERVAL = 1 tick)
 	this.TICKER_INTERVAL = 20;
+	const tps = 1000 / this.TICKER_INTERVAL;
+
+	this.ROLL_COOLDOWN = 3 * tps;
+	this.ROBBER_DURATION = 25 * tps;
+	this.PLENTY_BONUS = 1;
 }
 
 class GameRoom {
@@ -49,15 +51,24 @@ class GameRoom {
 	startGame() {
 		if (this.state !== GameRoom.RoomState.IN_PROGRESS) {
 			this.state = GameRoom.RoomState.IN_PROGRESS;
-			this.game.startTicker(this.configuration.TICKER_INTERVAL);
+			this.game.startTicker(this.configuration.TICKER_INTERVAL, (time) => {
+				if (time % Math.floor(100 / this.configuration.TICKER_INTERVAL) === 0) {
+					this.broadcast('time', time);
+				}
+			});
 			const grid = this.game.getResourceConfiguration();
 			// console.log(grid);
 			const configuration = {
 				g: grid,
+				h: this.host.id,
 			};
 			const playerData = Object.values(this.players).map((x) => x.export());
 			this.broadcast('configuration', configuration);
 			this.broadcast('playerData', playerData);
+			// for(const p in this.players){
+			// 	const { socket, id } = this.players[p];
+			// 	socket.emit('id', id);
+			// }
 		}
 	}
 	broadcast(event, data) {
@@ -70,6 +81,14 @@ class GameRoom {
 		this.players[socket.id] = new Player(socket, name);
 		this.players[socket.id].setId(this.playersJoined++);
 		if (Object.keys(this.players).length <= 1) this.reassignHost();
+
+		const configuration = {
+			h: this.host?.id,
+		};
+		const playerData = Object.values(this.players).map((x) => x.export());
+		socket.emit('configuration', configuration);
+		socket.emit('id', this.players[socket.id].id);
+		this.broadcast('playerData', playerData);
 	}
 	leave(socket) {
 		const needsNewHost = this.players[socket.id] === this.host;
@@ -304,7 +323,20 @@ class GameRoom {
 				break;
 			}
 			case 'roll': {
+				const alreadyQueued = player.requestedRoll();
 				player.requestRoll();
+				if (player.canRoll(this.game.getTime())) this.processRoll(player);
+				else if (!alreadyQueued)
+					setTimeout(
+						() => this.processRoll(player),
+						this.configuration.TICKER_INTERVAL *
+							(2 + player.nextRoll - this.game.getTime()),
+					);
+				else
+					socket.emit(
+						'notify',
+						'ay chill for ' + (player.nextRoll - this.game.getTime()),
+					);
 				break;
 			}
 			case 'robber': {
@@ -347,7 +379,7 @@ class GameRoom {
 								'Act fail (monopoly) - invalid resource',
 							);
 						let resourceYield = 0;
-						for (const player of this.players) {
+						for (const player of Object.values(this.players)) {
 							const amt = player.resources[resource];
 							player.resources[resource] -= amt; // take from everyone (including self)
 							resourceYield += amt;
@@ -369,16 +401,23 @@ class GameRoom {
 		// sync player who initiated the event (TODO: update things affected by action)
 		this.broadcast('playerData', [player.export()]);
 	}
+	processRoll(player) {
+		if (player.requestedRoll() && player.canRoll(this.game.getTime())) {
+			player.clearRollRequest(
+				this.game.getTime() + this.configuration.ROLL_COOLDOWN,
+			);
+			const rollResult = [...new Array(2)]
+				.map((x) => ~~(1 + 6 * Math.random()))
+				.reduce((a, b) => a + b);
+			// console.log('processing roll result %i', rollResult);
+			this.game.processRoll(rollResult, this.game.getTime());
+			this.broadcast('roll', rollResult);
+			this.broadcast('playerData', [player.export()]);
+		}
+	}
 	processRolls() {
-		for (const player of this.players) {
-			if (player.canRoll(this.game.getTime()) && player.requestedRoll()) {
-				player.clearRollRequest();
-				const rollResult = [...new Array(2)]
-					.map((x) => ~~(1 + 6 * Math.random()))
-					.reduce((a, b) => a + b);
-				console.log('processing roll result %i', rollResult);
-				this.game.processRoll(rollResult, this.game.getTime());
-			}
+		for (const player of Object.values(this.players)) {
+			this.processRoll(player);
 		}
 	}
 	build(where, who, what) {

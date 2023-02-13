@@ -20,7 +20,7 @@ class ResourceNode {
 		this.robberExpire = -1;
 	}
 	isActive(time) {
-		return this.robberExpire > time;
+		return this.robberExpire < time;
 	}
 	export() {
 		const t = this.trigger;

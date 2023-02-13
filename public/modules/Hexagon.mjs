@@ -15,8 +15,8 @@ class Hexagon extends Div {
 			return svg;
 		});
 		const padding = 20;
-		outline.setAttribute('height', 100+2*padding);
-		outline.setAttribute('width', 100+2*padding);
+		outline.setAttribute('height', 100 + 2 * padding);
+		outline.setAttribute('width', 100 + 2 * padding);
 		outline.style.top = outline.style.left = -padding + 'px';
 
 		const polygon = document.createElementNS(xmlns, 'polygon');
@@ -50,10 +50,10 @@ class Hexagon extends Div {
 		const nodes = [];
 		pts.forEach(([x, y], i) => {
 			const line = document.createElementNS(xmlns, 'line');
-			line.setAttribute('x1', x+padding);
-			line.setAttribute('y1', y+padding);
-			line.setAttribute('x2', pts[(i + 1) % 6][0]+padding);
-			line.setAttribute('y2', pts[(i + 1) % 6][1]+padding);
+			line.setAttribute('x1', x + padding);
+			line.setAttribute('y1', y + padding);
+			line.setAttribute('x2', pts[(i + 1) % 6][0] + padding);
+			line.setAttribute('y2', pts[(i + 1) % 6][1] + padding);
 			outline.appendChild(line);
 
 			const node = document.createElement('div');

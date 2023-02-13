@@ -145,13 +145,14 @@ class Game {
 		return grid;
 	}
 	processRoll(x, t) {
+		// console.log('processRoll', {x, t});
 		for (const row of this.grid) {
 			for (const [node, vertices, edges] of row) {
-				for (const vertex of vertices) {
-					if (node.trigger === x && node.isActive(t)) {
+				if (node.trigger === x && node.isActive(t)) {
+					for (const vertex of vertices) {
 						if (vertex.getOwner()) {
 							vertex.getOwner().resources[node.resourceType] +=
-								node.structure === StructureType.CITY_LARGE ? 2 : 1;
+								vertex.getStructure() === StructureType.CITY_LARGE ? 2 : 1;
 							// TODO : handle limited resources (toss results into array and shuffle, process in order)
 						}
 					}
@@ -159,9 +160,12 @@ class Game {
 			}
 		}
 	}
-	startTicker(tickerInterval) {
+	startTicker(tickerInterval, callback) {
 		clearInterval(this.tickerInterval);
-		this.tickerInterval = setInterval(this.tick, tickerInterval);
+		this.tickerInterval = setInterval(() => {
+			this.tick();
+			callback(this.time);
+		}, tickerInterval);
 	}
 	tick() {
 		this.time += 1;
