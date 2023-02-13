@@ -102,6 +102,15 @@ class HexagonGrid extends Div {
 		if (!(y in this.grid) || !(x in this.grid[y])) return undefined;
 		return this.grid[y][x];
 	}
+	*getNodes() {
+		for (let row of this.grid) {
+			for (let node of row) {
+				if (node) {
+					yield node;
+				}
+			}
+		}
+	}
 }
 
 export { HexagonGrid };

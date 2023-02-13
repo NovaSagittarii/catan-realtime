@@ -139,10 +139,27 @@ textarea {
 	);
 }
 
+.hexagon {
+	filter: drop-shadow(0px 0px 0px transparent);
+}
+.dropShadow {
+	animation-name: dropShadow;
+	animation-duration: 1s;
+}
+@keyframes dropShadow {
+	0% {
+		filter: drop-shadow(0px 0px 10px black);
+		animation-timing-function: cubic-bezier(0.17, 0.67, 0.52, 0.96);
+	}
+	100% {
+		filter: drop-shadow(0px 0px 0px transparent);
+	}
+}
+
 /* coding in css :^) */
 button.startGame {
 	display: none;
 }
 :has(.panel.playerHost.playerSelf) button.startGame {
-	display: block !important;
+	display: inline !important;
 }

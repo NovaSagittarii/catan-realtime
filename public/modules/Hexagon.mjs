@@ -70,7 +70,7 @@ class Hexagon extends Div {
 		labelDiv.classList.add('label');
 		labelDiv.style.left = (100 / 2).toFixed(0) + 'px';
 		labelDiv.style.top = ((bottom - top) / 2).toFixed(0) + 'px';
-		this.label = document.createTextNode('');
+		this.label = document.createTextNode('-');
 		labelDiv.append(this.label);
 		div.append(labelDiv);
 
@@ -79,6 +79,8 @@ class Hexagon extends Div {
 			lines: [...outline.children],
 			nodes,
 		};
+
+		this.t = this.r = null;
 	}
 	getHexagon() {
 		return this.elements.hexagon;
@@ -96,19 +98,27 @@ class Hexagon extends Div {
 	setLabel(t) {
 		this.label.nodeValue = t;
 	}
+	getResource() {
+		return this.r;
+	}
+	getTrigger() {
+		return this.t;
+	}
 	// t: trigger, r: resource
 	applyConfiguration({ t, r }) {
 		const ResourceColors = [
-			'#aa0000',
-			'#00aa00',
-			'#0000aa',
-			'#5555aa',
-			'#aa5555',
+			'#aadddd',
+			'#ddaadd',
+			'#ddddaa',
+			'#aaaadd',
+			'#ddaaaa',
 		];
 		const pips = '\u2022'.repeat(6 - Math.abs(7 - t));
 		this.setLabel(`${t}\n${pips}`);
 		this.elements.hexagon.querySelector('polygon').style.fill =
 			ResourceColors[r];
+		this.t = t;
+		this.r = r;
 	}
 	sync(z, owner, structure) {
 		// HSB ( 347°, 73%, 96% )

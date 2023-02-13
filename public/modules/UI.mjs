@@ -1,5 +1,6 @@
 import { HexagonGrid } from './HexagonGrid.mjs';
 import { PlayerDisplay } from './PlayerDisplay.mjs';
+import { RollAnimator } from './RollAnimator.mjs';
 import { Button } from './HTMLElements.mjs';
 
 const configuration = {
@@ -17,6 +18,10 @@ const hexagonGrid = new HexagonGrid({
 });
 
 const playerDisplay = new PlayerDisplay();
+const rollResults = new RollAnimator({
+	body: document.body,
+	nodes: Array.from(hexagonGrid.getNodes()),
+});
 
 document.body.append(hexagonGrid.getElement(), playerDisplay.getElement());
 
@@ -78,7 +83,10 @@ socket.on('rooms', (rooms) => {
 });
 // socket.on('room')
 socket.on('configuration', ({ g, h }) => {
-	if (g !== undefined) hexgrid.applyConfiguration(g);
+	if (g !== undefined) {
+		hexgrid.applyConfiguration(g);
+		rollResults.updateLocations();
+	}
 	if (h !== undefined) {
 		configuration.host = h;
 		playerDisplay.setHost(h);
@@ -104,7 +112,8 @@ socket.on('gridData', (gridData) => {
 	}
 });
 socket.on('roll', (value) => {
-	console.log(value);
+	// console.log(value);
+	rollResults.processRoll(value);
 });
 socket.on('time', (time) => {
 	playerDisplay.updateTime(time);
