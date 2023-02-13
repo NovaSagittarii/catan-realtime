@@ -147,15 +147,17 @@ class GameRoom {
 				let sufficientResources = StructureCost[building]
 					.map((x, i) => x <= player.resources[i])
 					.reduce((a, b) => a && b, true); // may be override by using vouchers
+				// TODO: if adding more buildings, fixing building->playerBlueprint mapping will need to be fixed
+				sufficientResources &&= player.blueprints[building & 7];
+				const useVoucher =
+					(building === StructureType.ROAD && player.queued.road > 0) ||
+					(building === StructureType.CITY_SMALL &&
+						player.queued.city_small > 0);
+
 				// console.log(StructureCost, building);
 				// console.log(StructureCost[building]);
 				// console.log(sufficientResources);
-				if (
-					!sufficientResources &&
-					((building === StructureType.ROAD && !player.queued.road) ||
-						(building === StructureType.CITY_SMALL &&
-							!player.queued.city_small))
-				)
+				if (!sufficientResources && !useVoucher)
 					return this.protocolViolation(
 						socket,
 						'Build fail - insufficient resources',
@@ -214,7 +216,7 @@ class GameRoom {
 								socket,
 								'Build fail (road) - road is not connected to city or road',
 							);
-						if (!sufficientResources) {
+						if (!sufficientResources || useVoucher) {
 							if (player.queued.road > 0) {
 								player.queued.road--;
 								sufficientResources = false;
@@ -261,20 +263,22 @@ class GameRoom {
 							[dx, dy, -2],
 						]);
 						const nearbyRoad =
-							nearbyRoads[side].filter(
-								([dx, dy, dz]) =>
+							nearbyRoads[side].filter(([dx, dy, dz]) => {
+								return (
 									this.game
 										.getEdge(x + dx, y + dy, (side + dz + 6) % 6)
-										?.getOwner() === player,
-							) > 0;
-						if (!nearbyRoad && !player.queued.city_small)
+										?.getOwner() === player
+								);
+							}).length > 0;
+						console.log({ nearbyRoad, useVoucher });
+						if (!nearbyRoad && !useVoucher)
 							return this.protocolViolation(
 								socket,
 								'Build fail (city_small) - missing nearby road',
 							);
 						// allow building without road if its the beginning of the game
 						// console.log(player.queued.city_small);
-						if (!sufficientResources) {
+						if (!sufficientResources || useVoucher) {
 							if (player.queued.city_small > 0) {
 								player.queued.city_small--;
 								sufficientResources = false;
@@ -307,8 +311,13 @@ class GameRoom {
 					}
 				}
 				// take cost and update grid
-				if (sufficientResources)
+				if (sufficientResources) {
 					StructureCost[building].forEach((x, i) => (player.resources[i] -= x));
+					// TODO: if adding more buildings, fixing building->playerBlueprint mapping will need to be fixed
+					player.blueprints[building & 7]--;
+					if (building === StructureType.CITY_LARGE)
+						player.blueprints[StructureType.CITY_SMALL]++;
+				}
 				this.build(location, player, building);
 				// update everyone something new is built
 				this.broadcast('gridData', [
@@ -332,11 +341,11 @@ class GameRoom {
 						this.configuration.TICKER_INTERVAL *
 							(2 + player.nextRoll - this.game.getTime()),
 					);
-				else
-					socket.emit(
-						'notify',
-						'ay chill for ' + (player.nextRoll - this.game.getTime()),
-					);
+				// else
+				// 	socket.emit(
+				// 		'notify',
+				// 		'ay chill for ' + (player.nextRoll - this.game.getTime()),
+				// 	);
 				break;
 			}
 			case 'robber': {
