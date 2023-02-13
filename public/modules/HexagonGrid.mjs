@@ -20,7 +20,7 @@ class HexagonGrid extends Div {
 				const y1 = -i + k;
 				const x1 = j + Math.max(i, 0) - 1;
 
-				h.setPosition(x * 100 * 1.4, y * Math.sqrt(3) * 50 * 1.4);
+				h.setPosition(x * 100, y * Math.sqrt(3) * 50);
 				h.getHexagon().addEventListener('click', () =>
 					// this.process(y1, x1, 16),
 					callbacks?.node(x1, y1, 16),
