@@ -23,7 +23,7 @@ class RollAnimator {
 		}
 	}
 	processRoll(rollValue) {
-		// console.log('RollAnimator.processRoll', rollValue);
+		console.log('RollAnimator.processRoll', rollValue);
 		for (const [e, x, y] of this.rollPositions[rollValue]) {
 			// https://stackoverflow.com/a/58353279 (reflow does not work on svg!!?? probably something to do with the createElementNS)
 			e.classList.remove('dropShadow'); // reset animation

@@ -1,4 +1,9 @@
 import { Div } from './HTMLElements.mjs';
+import {
+	ResourceEmoji,
+	ResourceColors,
+	PlayerColors,
+} from './GraphicalConstants.mjs';
 
 class Hexagon extends Div {
 	constructor(x = 0, y = 0) {
@@ -66,13 +71,19 @@ class Hexagon extends Div {
 
 		this.setPosition(x, y);
 
-		const labelDiv = document.createElement('div');
-		labelDiv.classList.add('label');
+		const labelDiv = new Div('label').getElement();
 		labelDiv.style.left = (100 / 2).toFixed(0) + 'px';
 		labelDiv.style.top = ((bottom - top) / 2).toFixed(0) + 'px';
 		this.label = document.createTextNode('-');
 		labelDiv.append(this.label);
 		div.append(labelDiv);
+
+		const backgroundDiv = new Div('backgroundLabel').getElement();
+		backgroundDiv.style.left = (100 / 2).toFixed(0) + 'px';
+		backgroundDiv.style.top = ((bottom - top) / 2).toFixed(0) + 'px';
+		this.backgroundLabel = document.createTextNode('=');
+		backgroundDiv.append(this.backgroundLabel);
+		div.append(backgroundDiv);
 
 		this.elements = {
 			hexagon,
@@ -98,6 +109,9 @@ class Hexagon extends Div {
 	setLabel(t) {
 		this.label.nodeValue = t;
 	}
+	setBackgroundLabel(t) {
+		this.backgroundLabel.nodeValue = t;
+	}
 	getResource() {
 		return this.r;
 	}
@@ -106,29 +120,15 @@ class Hexagon extends Div {
 	}
 	// t: trigger, r: resource
 	applyConfiguration({ t, r }) {
-		const ResourceColors = [
-			'#aadddd',
-			'#ddaadd',
-			'#ddddaa',
-			'#aaaadd',
-			'#ddaaaa',
-		];
 		const pips = '\u2022'.repeat(6 - Math.abs(7 - t));
 		this.setLabel(`${t}\n${pips}`);
+		this.setBackgroundLabel(ResourceEmoji[r]);
 		this.elements.hexagon.querySelector('polygon').style.fill =
 			ResourceColors[r];
 		this.t = t;
 		this.r = r;
 	}
 	sync(z, owner, structure) {
-		// HSB ( 347°, 73%, 96% )
-		const PlayerColors = [
-			'#4287f5',
-			'#7542f5',
-			'#ce42f5',
-			'#f542c2',
-			'#f54269',
-		];
 		// console.log('hexnode.sync', {z, owner, structure});
 		if (structure & 16)
 			return; // sync hexagon (but you dont build on it -- use applyConfiguration to set robber instead)

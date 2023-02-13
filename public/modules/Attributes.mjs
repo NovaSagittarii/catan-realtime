@@ -63,5 +63,27 @@ class CooldownAttribute extends Attribute {
 			'%';
 	}
 }
+class ListAttribute extends Attribute {
+	constructor(attribute, listNames) {
+		super(attribute);
+		this.htmlElement.classList.add('listAttribute');
+		this.labels = listNames;
+		this.values = listNames.map((name) => new TextAttribute(name, 0));
+		this.values.forEach((textAttribute) =>
+			this.htmlElement.append(textAttribute.getElement()),
+		);
+	}
+	sync(newData) {
+		for (const i in newData) {
+			this.values[i].sync(newData[i]);
+		}
+	}
+}
 
-export { Attribute, TextAttribute, NumericalAttribute, CooldownAttribute };
+export {
+	Attribute,
+	TextAttribute,
+	NumericalAttribute,
+	CooldownAttribute,
+	ListAttribute,
+};

@@ -82,12 +82,12 @@ class GameRoom {
 		this.players[socket.id] = new Player(socket, name);
 		this.players[socket.id].setId(this.playersJoined++);
 		if (Object.keys(this.players).length <= 1) this.reassignHost();
-
 		const configuration = {
 			h: this.host?.id,
 		};
+		this.broadcast('configuration', configuration);
+
 		const playerData = Object.values(this.players).map((x) => x.export());
-		socket.emit('configuration', configuration);
 		socket.emit('id', this.players[socket.id].id);
 		this.broadcast('playerData', playerData);
 	}
@@ -447,6 +447,12 @@ class GameRoom {
 			this.name,
 			this.host?.socket.id,
 		);
+		if (this.host) {
+			const configuration = {
+				h: this.host?.id,
+			};
+			this.broadcast('configuration', configuration);
+		}
 	}
 }
 

@@ -2,13 +2,13 @@
 
 const EdgeStructures = {
 	road: {
-		initial: 15,
+		initial: 15 - 2,
 		cost: [1, 1, 0, 0, 0],
 	},
 };
 const VertexStructures = {
 	city_small: {
-		initial: 5,
+		initial: 5 - 2,
 		cost: [1, 1, 1, 1, 0],
 	},
 	city_large: {

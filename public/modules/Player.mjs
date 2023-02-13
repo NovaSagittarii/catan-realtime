@@ -3,7 +3,13 @@ import {
 	TextAttribute,
 	NumericalAttribute,
 	CooldownAttribute,
+	ListAttribute,
 } from './Attributes.mjs';
+import {
+	ResourceEmoji,
+	StructureEmoji,
+	CardEmoji,
+} from './GraphicalConstants.mjs';
 
 class Player extends Div {
 	constructor(id, name) {
@@ -17,9 +23,24 @@ class Player extends Div {
 			robber: new NumericalAttribute('Robbers to place', 0),
 			road: new NumericalAttribute('Roads to place', 0),
 			city_small: new NumericalAttribute('Settlements to place', 0),
-			resources: new TextAttribute('Resources', 0),
-			blueprints: new TextAttribute('Blueprints', 0),
-			cards: new TextAttribute('Cards', 0),
+			resources: new ListAttribute(
+				'',
+				['Brick', 'Lumber', 'Wool', 'Grain', 'Ore'].map(
+					(x, i) => ResourceEmoji[i] + ' ' + x,
+				),
+			),
+			blueprints: new ListAttribute(
+				'',
+				['Road', 'Settlement', 'City'].map(
+					(x, i) => StructureEmoji[i] + ' ' + x,
+				),
+			),
+			cards: new ListAttribute(
+				'',
+				['Knight', 'Point', 'Monopoly', 'Resources', '2 Roads'].map(
+					(x, i) => CardEmoji[i] + ' ' + x,
+				),
+			),
 		};
 		this.attributes.name.getElement().classList.add('playerName');
 		for (const attribute of Object.values(this.attributes))
