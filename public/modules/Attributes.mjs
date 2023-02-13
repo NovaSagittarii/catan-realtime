@@ -26,7 +26,15 @@ class TextAttribute extends Attribute {
 		this.textNode.nodeValue = newText;
 	}
 }
-class NumericalAttribute extends Attribute {}
+class NumericalAttribute extends TextAttribute {
+	constructor(attribute, value) {
+		super(attribute, value);
+	}
+	sync(newNumber) {
+		super.sync(newNumber);
+		this.htmlElement.style.display = newNumber ? 'block' : 'none';
+	}
+}
 class CooldownAttribute extends Attribute {
 	constructor(attribute, value) {
 		super(attribute);

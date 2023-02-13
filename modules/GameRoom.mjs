@@ -54,6 +54,7 @@ class GameRoom {
 			this.game.startTicker(this.configuration.TICKER_INTERVAL, (time) => {
 				if (time % Math.floor(100 / this.configuration.TICKER_INTERVAL) === 0) {
 					this.broadcast('time', time);
+					this.processRolls(); // TODO: move this to timeout isntead of interval :^)
 				}
 			});
 			const grid = this.game.getResourceConfiguration();
@@ -335,12 +336,13 @@ class GameRoom {
 				const alreadyQueued = player.requestedRoll();
 				player.requestRoll();
 				if (player.canRoll(this.game.getTime())) this.processRoll(player);
-				else if (!alreadyQueued)
-					setTimeout(
-						() => this.processRoll(player),
-						this.configuration.TICKER_INTERVAL *
-							(2 + player.nextRoll - this.game.getTime()),
-					);
+				// else if (!alreadyQueued)
+				// 	setTimeout(
+				// 		() => this.processRoll(player),
+				// 		this.configuration.TICKER_INTERVAL *
+				// 			(2 + player.nextRoll - this.game.getTime()),
+				// 	); // somehow broken... no idea
+
 				// else
 				// 	socket.emit(
 				// 		'notify',
@@ -411,6 +413,7 @@ class GameRoom {
 		this.broadcast('playerData', [player.export()]);
 	}
 	processRoll(player) {
+		// console.log("processing roll for player %s", player.nextRoll, this.game.getTime());
 		if (player.requestedRoll() && player.canRoll(this.game.getTime())) {
 			player.clearRollRequest(
 				this.game.getTime() + this.configuration.ROLL_COOLDOWN,
