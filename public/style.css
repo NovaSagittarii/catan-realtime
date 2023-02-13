@@ -30,10 +30,17 @@ textarea {
 }
 .hexagonNode .label {
 	position: absolute;
+	line-height: 0.75;
+	font-size: large;
 	text-align: center;
 	transform: translate(-50%, -50%);
 	filter: drop-shadow(0px 0px 2px #ffffff);
 	user-select: none;
+	opacity: 0.5;
+	transition: 0.2s all cubic-bezier(0.17, 0.67, 0.83, 0.67);
+}
+.hexagonNode:hover .label {
+	opacity: 1;
 }
 .hexagon {
 	transform: scale(0.8, 0.8);
@@ -48,31 +55,39 @@ textarea {
 	position: absolute;
 	pointer-events: auto;
 	stroke: #dddddd;
-	stroke-width: 3;
+	stroke-width: 5;
 	transition: 0.1s all cubic-bezier(0.17, 0.67, 0.83, 0.67);
 }
 .hexagonNode line:hover {
-	stroke-width: 20;
+	stroke-width: 15;
+	filter: drop-shadow(0px 0px 1px black);
 }
 .hexagonNode .node {
 	transform: translate(-50%, -50%);
-	width: 20px;
-	height: 20px;
+	width: 17px;
+	height: 17px;
 	position: absolute;
 	border-radius: 50%;
 	pointer-events: auto;
 	transition: 0.2s all cubic-bezier(0.17, 0.67, 0.83, 0.67);
 }
+.hexagonNode .node:hover {
+	filter: drop-shadow(0px 0px 1px black);
+}
 .hexagonNode .nullStructure {
 	background: #dddddd;
+}
+.hexagonNode .nullStructure:hover {
+	width: 20px;
+	height: 20px;
 }
 .hexagonNode .citySmall {
 	opacity: 1;
 }
-.hexagonNode .nullStructure:hover {
-	width: 25px;
-	height: 25px;
-	border-radius: 0;
+.hexagonNode .citySmall:hover {
+	width: 20px;
+	height: 20px;
+	border-radius: 25%;
 }
 .hexagon:hover {
 	transform: scale(0.9, 0.9);

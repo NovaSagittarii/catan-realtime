@@ -106,7 +106,14 @@ class Hexagon extends Div {
 			ResourceColors[r];
 	}
 	sync(z, owner, structure) {
-		const PlayerColors = ['#4287f5'];
+		// HSB ( 347°, 73%, 96% )
+		const PlayerColors = [
+			'#4287f5',
+			'#7542f5',
+			'#ce42f5',
+			'#f542c2',
+			'#f54269',
+		];
 		// console.log('hexnode.sync', {z, owner, structure});
 		if (structure & 16)
 			return; // sync hexagon (but you dont build on it -- use applyConfiguration to set robber instead)

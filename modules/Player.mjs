@@ -15,10 +15,10 @@ class Player {
 		this.queued = {
 			roll: false,
 			robber: 0,
-			road: 2 && 2000,
-			city_small: 2 && 2000,
+			road: 2,
+			city_small: 2,
 		};
-		this.resources = InitialResource.map(() => 0);
+		this.resources = InitialResource.map(() => 2000);
 		this.blueprints = new Array(...blueprints);
 		this.cards = InitialCard.map(() => 0);
 	}

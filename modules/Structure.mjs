@@ -21,6 +21,9 @@ class Structure {
 	getStructure() {
 		return this.structure;
 	}
+	exists() {
+		return this.structure !== null;
+	}
 	export() {
 		const o = this.owner?.id;
 		const s = this.structure;

@@ -75,7 +75,7 @@ class GameRoom {
 		const needsNewHost = this.players[socket.id] === this.host;
 		delete this.players[socket.id];
 		if (needsNewHost) this.reassignHost();
-		console.log(this.players);
+		// console.log(this.players);
 		if (Object.keys(this.players).length === 0) {
 			console.log('>> room <%s> is empty -- game reset', this.name);
 			this.initialize();
@@ -103,8 +103,7 @@ class GameRoom {
 				if (node) socket.emit('ans', this.game.getNode(x, y).export());
 				else if (edge)
 					socket.emit('ans', this.game.getEdge(x, y, side).export());
-				else
-					socket.emit('ans', this.game.getVertex(x, y, side).export());
+				else socket.emit('ans', this.game.getVertex(x, y, side).export());
 				break;
 			}
 			case 'build': {
@@ -126,13 +125,17 @@ class GameRoom {
 						'Build fail - wrong structure subtype (edge-vertex mismatch)',
 					);
 
-				const sufficientResources = StructureCost[building]
+				let sufficientResources = StructureCost[building]
 					.map((x, i) => x <= player.resources[i])
-					.reduce((a, b) => a && b, true);
+					.reduce((a, b) => a && b, true); // may be override by using vouchers
+				// console.log(StructureCost, building);
+				// console.log(StructureCost[building]);
+				// console.log(sufficientResources);
 				if (
-					sufficientResources &&
-					building !== StructureType.ROAD &&
-					building !== StructureType.CITY_SMALL
+					!sufficientResources &&
+					((building === StructureType.ROAD && !player.queued.road) ||
+						(building === StructureType.CITY_SMALL &&
+							!player.queued.city_small))
 				)
 					return this.protocolViolation(
 						socket,
@@ -140,6 +143,15 @@ class GameRoom {
 					);
 
 				// console.log(player.queued, player.resources);
+				const directions = [
+					// +1 is clockwise
+					[1, -1], // 0 (lower right)
+					[0, -1], // 1 (lower left)
+					[-1, 0], // 2 (middle left)
+					[-1, 1], // 3 (upper left)
+					[0, 1], // 4 (upper right)
+					[1, 0], // 5 (middle right)
+				];
 				switch (building) {
 					case StructureType.ROAD: {
 						location = this.game.getEdge(x, y, side);
@@ -148,19 +160,51 @@ class GameRoom {
 								socket,
 								'Build fail (road) - edge does not exist',
 							);
-						if (location.getStructure())
+						if (location.exists())
 							return this.protocolViolation(
 								socket,
 								'Build fail (road) - not empty',
 							);
-						// TODO: a road is already connected
-						if (!sufficientResources && player.queued.road > 0)
-							player.queued.road--;
-						else
+						// assert a road is already connected
+						const connectedRoads = directions.map(([dx, dy]) => [
+							[0, 0, -1],
+							[0, 0, 1],
+							[dx, dy, 2],
+							[dx, dy, -2],
+						]);
+						// [
+						// 	[[0,0,-1],[0,0,1],[1,-1,2],[1,-2,-2]],
+						// 	[[0,0,-1],[0,0,1],[0,-1,2],[0,-1,-2]],
+						// 	[[0,0,-1],[0,0,1],[-1,0,2],[-1,0,-2]],
+						// 	[[0,0,-1],[0,0,1],[-1,1,2],[-1,1,-2]],
+						// 	[[0,0,-1],[0,0,1],[0,1,2],[0,1,-2]],
+						// 	[[0,0,-1],[0,0,1],[1,0,2],[1,0,-2]],
+						// ];
+						const connectsToCity =
+							this.game.getVertex(x, y, side).getOwner() === player ||
+							this.game.getVertex(x, y, (side + 1) % 6).getOwner() === player;
+						const connectsToRoad =
+							connectedRoads[side].filter(
+								([dx, dy, dz]) =>
+									this.game
+										.getEdge(x + dx, y + dy, (side + dz + 6) % 6)
+										?.getOwner() === player,
+							).length > 0;
+						if (!connectsToCity && !connectsToRoad)
 							return this.protocolViolation(
 								socket,
-								'Build fail - insufficient resources',
+								'Build fail (road) - road is not connected to city or road',
 							);
+						if (!sufficientResources) {
+							if (player.queued.road > 0) {
+								player.queued.road--;
+								sufficientResources = false;
+							} else
+								return this.protocolViolation(
+									socket,
+									'Build fail - insufficient resources',
+								);
+						}
 						break;
 					}
 					case StructureType.CITY_SMALL: {
@@ -176,14 +220,51 @@ class GameRoom {
 								'Build fail (city_small) - not empty',
 							);
 						// TODO: a road is already connected and there are no nearby cities
-						// console.log(player.queued.city_small);
-						if (!sufficientResources && player.queued.city_small > 0)
-							player.queued.city_small--;
-						else
+						const nearbyCities = directions.map(([dx, dy]) => [
+							[0, 0, -1],
+							[0, 0, 1],
+							[dx, dy, -1],
+						]);
+						const nearbyCity =
+							nearbyCities[side].filter(([dx, dy, dz]) =>
+								this.game
+									.getVertex(x + dx, y + dy, (side + dz + 6) % 6)
+									?.exists(),
+							).length > 0;
+						if (nearbyCity)
 							return this.protocolViolation(
 								socket,
-								'Build fail - insufficient resources',
+								'Build fail (city_small) - nearby city',
 							);
+						const nearbyRoads = directions.map(([dx, dy]) => [
+							[0, 0, 0],
+							[0, 0, -1],
+							[dx, dy, -2],
+						]);
+						const nearbyRoad =
+							nearbyRoads[side].filter(
+								([dx, dy, dz]) =>
+									this.game
+										.getEdge(x + dx, y + dy, (side + dz + 6) % 6)
+										?.getOwner() === player,
+							) > 0;
+						if (!nearbyRoad && !player.queued.city_small)
+							return this.protocolViolation(
+								socket,
+								'Build fail (city_small) - missing nearby road',
+							);
+						// allow building without road if its the beginning of the game
+						// console.log(player.queued.city_small);
+						if (!sufficientResources) {
+							if (player.queued.city_small > 0) {
+								player.queued.city_small--;
+								sufficientResources = false;
+							} else
+								return this.protocolViolation(
+									socket,
+									'Build fail - insufficient resources',
+								);
+						}
 						break;
 					}
 					case StructureType.CITY_LARGE: {
@@ -306,6 +387,7 @@ class GameRoom {
 	protocolViolation(who, msg) {
 		console.log('PROTOCOL VIOLATION by <%s> :: %s', who.id, msg);
 		// normally u just dc them :^)
+		who.emit('notify', msg);
 	}
 	reassignHost(to) {
 		this.host = to || Object.values(this.players)[0] || null;

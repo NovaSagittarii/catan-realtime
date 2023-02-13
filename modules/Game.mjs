@@ -8,6 +8,16 @@ import { InitialCard } from './Cards.mjs';
 
 import { StructureType } from './Structures.mjs';
 
+const directions = [
+	// +1 is clockwise
+	[1, -1], // 0 (lower right)
+	[0, -1], // 1 (lower left)
+	[-1, 0], // 2 (middle left)
+	[-1, 1], // 3 (upper left)
+	[0, 1], // 4 (upper right)
+	[1, 0], // 5 (middle right)
+];
+
 class Game {
 	constructor() {
 		this.time = 0;
@@ -56,11 +66,11 @@ class Game {
 			}
 		}
 
-		console.log(
-			this.grid.map((row) =>
-				row.map((node) => node[2].map((x) => x?.id || '?').join(' ')),
-			),
-		);
+		// console.log(
+		// 	this.grid.map((row) =>
+		// 		row.map((node) => node[2].map((x) => x?.id || '?').join(' ')),
+		// 	),
+		// );
 
 		this.initialize();
 	}
@@ -77,19 +87,44 @@ class Game {
 		clearInterval(this.tickerInterval);
 	}
 	getNode(x, y) {
+		// returns type ResourceNode
 		if (!(y in this.grid) || !(x in this.grid[y])) return null;
 		return this.grid[y][x][0];
 	}
 	getVertex(x, y, k) {
+		// returns type Vertex
 		// console.log('getvertex', x, y, k);
-		if (!(y in this.grid) || !(x in this.grid[y])) return null;
-		if (k < 0 || k > 6) return null;
-		return this.grid[y][x][1][k];
+		const alt = directions.map(([dx, dy], i) => [
+			[dx, dy, 4],
+			[...directions[(i - 1 + 6) % 6], 2],
+		]);
+		if (this.grid[y] && this.grid[y][x]) return this.grid[y][x][1][k];
+		else {
+			for (const [dx, dy, dz] of alt[k]) {
+				const nx = x + dx;
+				const ny = y + dy;
+				const nz = (k + dz) % 6;
+				if (this.grid[ny] && this.grid[ny][nx]) return this.grid[ny][nx][1][nz];
+			}
+		}
+		return null;
 	}
 	getEdge(x, y, k) {
-		if (!(y in this.grid) || !(x in this.grid[y])) return null;
-		if (k < 0 || k > 6) return null;
-		return this.grid[y][x][2][k];
+		// returns type Edge
+		// console.log('getedge', x, y, k);
+		const alt = directions.map(([dx, dy]) => [[dx, dy, 3]]);
+		if (this.grid[y] && this.grid[x]) return this.grid[y][x][2][k];
+		else {
+			for (const [dx, dy, dz] of alt[k]) {
+				const nx = x + dx;
+				const ny = y + dy;
+				const nz = (k + dz) % 6;
+				if (this.grid[ny] && this.grid[ny][nx]) {
+					return this.grid[ny][nx][2][nz];
+				}
+			}
+		}
+		return null;
 	}
 	getTime() {
 		return this.time;

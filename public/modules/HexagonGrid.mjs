@@ -85,10 +85,10 @@ class HexagonGrid extends Div {
 		const edgeOffset = nodeOffset
 			.map((_, i) => nodeOffset[(i + 1) % 6][0])
 			.map(([dx, dy, dz]) => [[dx, dy, 3]]);
-		console.log('hexgrid.sync', { x, y, z, building, playerId });
+		// console.log('hexgrid.sync', { x, y, z, building, playerId });
 		[[0, 0, 0], ...(z & 8 ? edgeOffset[z & 7] : nodeOffset[z & 7])].forEach(
 			([dx, dy, dz]) => {
-				console.log(x + dx, y + dy, (z + dz + (z & 8 ? -2 : 0) + 6) % 6);
+				// console.log(x + dx, y + dy, (z + dz + (z & 8 ? -2 : 0) + 6) % 6);
 				this.getNode(x + dx, y + dy)?.sync(
 					(z + dz + (z & 8 ? -2 : 0) + 6) % 6,
 					playerId,
