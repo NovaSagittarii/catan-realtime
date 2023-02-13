@@ -83,13 +83,18 @@ textarea {
 	width: 20px;
 	height: 20px;
 }
-.hexagonNode .citySmall {
+.citySmall,
+.cityLarge {
 	opacity: 1;
 }
 .hexagonNode .citySmall:hover {
 	width: 20px;
 	height: 20px;
-	border-radius: 25%;
+}
+.hexagonNode .cityLarge {
+	border: rgba(0, 0, 0, 0.5) 3px solid;
+	outline: rgba(0, 0, 0, 0.5) 6px solid;
+	outline-offset: -6px;
 }
 .hexagon:hover {
 	transform: scale(0.9, 0.9);

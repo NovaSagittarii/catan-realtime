@@ -47,7 +47,17 @@ function processInput(type, x, y, z) {
 			break;
 		}
 		case 'vertex': {
-			socket.emit('build', { x, y, z, building: STRUCTURE.CITY_SMALL });
+			socket.emit('build', {
+				x,
+				y,
+				z,
+				building: hexgrid
+					.getNode(x, y)
+					.getVertex(z)
+					.classList.contains('citySmall')
+					? STRUCTURE.CITY_LARGE
+					: STRUCTURE.CITY_SMALL,
+			});
 			break;
 		}
 		case 'edge': {
