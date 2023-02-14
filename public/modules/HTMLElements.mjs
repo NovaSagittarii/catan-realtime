@@ -23,6 +23,12 @@ class Span extends HTMLElement {
 		super('span', ...classNames);
 	}
 }
+class TextDiv extends Div {
+	constructor(text, ...classNames) {
+		super(...classNames);
+		this.htmlElement.append(document.createTextNode(text));
+	}
+}
 class Button extends HTMLElement {
 	constructor(label, classNames, onclick) {
 		super('button', ...classNames);
@@ -36,5 +42,49 @@ class ButtonKeybind extends Button {
 		onkeycode[keycode] = () => onclick();
 	}
 }
+class SelectModal extends HTMLElement {
+	static activeModal = null;
+	static activeCallbacks = [];
+	constructor({ title, choices, callbacks }) {
+		super('div', 'selectModal', 'hidden');
+		this.active = false;
+		this.choices = choices; // String[]
+		this.callbacks = callbacks; // Function[]
+		this.htmlElement.append(
+			new TextDiv(title, 'selectModalTitle').getElement(),
+		);
+		console.log(callbacks);
+		for (let i = 0; i < choices.length; i++) {
+			this.htmlElement.append(
+				new Button(
+					`[${i + 1}] ` + choices[i],
+					['text-left'],
+					callbacks[i],
+				).getElement(),
+			);
+		}
+		this.htmlElement.addEventListener('click', () => this.resolve());
+	}
+	activate() {
+		if (SelectModal.activeModal) SelectModal.activeModal.resolve();
+		SelectModal.activeModal = this;
+		SelectModal.activeCallbacks = this.callbacks;
+		this.htmlElement.classList.remove('hidden');
+	}
+	resolve() {
+		SelectModal.activeModal = null;
+		SelectModal.activeCallbacks = [];
+		this.htmlElement.classList.add('hidden');
+	}
+}
+[...new Array(9)].forEach((_, i) => {
+	onkeycode[49 + i] = () => {
+		// '1' to '9'
+		if (SelectModal.activeCallbacks[i]) {
+			SelectModal.activeCallbacks[i]();
+			SelectModal.activeModal.resolve();
+		}
+	};
+});
 
-export { HTMLElement, Div, Span, Button, ButtonKeybind };
+export { HTMLElement, Div, Span, Button, ButtonKeybind, SelectModal };

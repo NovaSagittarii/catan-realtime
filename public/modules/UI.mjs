@@ -1,10 +1,11 @@
 import { HexagonGrid } from './HexagonGrid.mjs';
 import { PlayerDisplay } from './PlayerDisplay.mjs';
 import { RollAnimator } from './RollAnimator.mjs';
-import { Button, ButtonKeybind } from './HTMLElements.mjs';
+import { Button, ButtonKeybind, SelectModal } from './HTMLElements.mjs';
 
 const configuration = {
 	host: null,
+	id: null,
 };
 
 const hexagonGrid = new HexagonGrid({
@@ -44,8 +45,11 @@ const buttonStartGame = new ButtonKeybind(
 const buttonRoll = new ButtonKeybind(32, 'Roll (space)', ['rollDice'], () =>
 	socket.emit('roll'),
 );
-const buttonDevelopmentCard = new Button('Buy card', ['buyCard'], () =>
-	socket.emit('act', { card: -1 }),
+const buttonDevelopmentCard = new ButtonKeybind(
+	90,
+	'Buy card (z)',
+	['buyCard'],
+	() => socket.emit('act', { card: -1 }),
 );
 buttonDevelopmentCard
 	.getElement()
@@ -60,17 +64,47 @@ buttonDevelopmentCard
 
 document.body.append(buttonStartGame.getElement(), buttonRoll.getElement());
 document.body.append(buttonDevelopmentCard.getElement());
-['Knight', 'Point', 'Monopoly', 'Resources', 'Road construction'].map(
-	(n, i) => {
-		document.body.append(
-			new Button(`use ${n}`, ['useCard'], () =>
-				socket.emit('act', {
-					card: i,
-					resource: i === 2 ? +prompt('resource id') : undefined,
-				}),
-			).getElement(),
-		);
-	},
+
+const selectModalResource = new SelectModal({
+	title: 'Select a resource',
+	choices: ['Brick', 'Lumber', 'Wool', 'Grain', 'Ore'],
+	callbacks: [...new Array(5)].map((_, i) => {
+		return () => {
+			console.log('take resource', i);
+			socket.emit('act', { card: 2, resource: i });
+		};
+	}),
+});
+const selectModalCard = new SelectModal({
+	title: 'Select a card to use',
+	choices: ['Knight', 'Point', 'Monopoly', 'Resources', 'Road construction'],
+	callbacks: [...new Array(5)].map((_, i) => {
+		// the callbacks are very messy... maybe use promises instead
+		if (i == 2) {
+			return () => {
+				// console.log('tryin to do an activate')
+				// console.log(selectModalResource);
+				selectModalResource.activate().a();
+				// it does not work properly without .a()... for some reason (even though it returns nothing)
+				// catching the error will also break it (.active method isn't called properly)
+			};
+		} else {
+			return () => {
+				console.log('play card', i);
+				socket.emit('act', { card: i });
+			};
+		}
+	}),
+});
+document.body.append(
+	new ButtonKeybind(88, 'Play card (x)', ['useCard'], () =>
+		selectModalCard.activate(),
+	).getElement(),
+);
+
+document.body.append(
+	selectModalCard.getElement(),
+	selectModalResource.getElement(),
 );
 
 const STRUCTURE = {

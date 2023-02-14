@@ -213,6 +213,51 @@ textarea {
 	}
 }
 
+/* selectModal */
+.selectModal {
+	bottom: 0;
+	position: absolute;
+	margin: 3em;
+	display: flex;
+	flex-wrap: nowrap;
+	flex-direction: column;
+	animation-name: slideFromRight;
+	animation-duration: 0.5s;
+}
+.selectModalTitle {
+	text-align: center;
+	font-weight: bold;
+}
+.selectModal.hidden {
+	animation-name: fadeOut;
+	animation-duration: 0.5s;
+	animation-fill-mode: forwards;
+	pointer-events: none;
+}
+.text-left {
+	text-align: left;
+}
+@keyframes slideFromRight {
+	0% {
+		transform: translateX(-100px);
+		animation-timing-function: cubic-bezier(0.17, 0.67, 0.52, 0.96);
+	}
+	100% {
+		transform: translateX(0px);
+	}
+}
+@keyframes fadeOut {
+	0% {
+		opacity: 1;
+		animation-timing-function: cubic-bezier(0.17, 0.67, 0.52, 0.96);
+	}
+	100% {
+		transform: translateX(100px);
+		opacity: 0;
+		display: none;
+	}
+}
+
 /* coding in css :^) */
 button.startGame {
 	display: none;
