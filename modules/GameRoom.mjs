@@ -277,7 +277,7 @@ class GameRoom {
 										?.getOwner() === player
 								);
 							}).length > 0;
-						console.log({ nearbyRoad, useVoucher });
+						// console.log({ nearbyRoad, useVoucher });
 						if (!nearbyRoad && !useVoucher)
 							return this.protocolViolation(
 								socket,
@@ -295,6 +295,7 @@ class GameRoom {
 									'Build fail - insufficient resources',
 								);
 						}
+						player.points += 1; // award 1 VP for building settlement (city_small)
 						break;
 					}
 					case StructureType.CITY_LARGE: {
@@ -314,6 +315,7 @@ class GameRoom {
 								socket,
 								'Build fail (city_large) - does not own',
 							);
+						player.points += 1; // award 1 net VP for upgrading settlement (city_small) to city (city_large)
 						break;
 					}
 				}
