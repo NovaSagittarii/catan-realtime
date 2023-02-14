@@ -2,6 +2,7 @@ import { Div } from './HTMLElements.mjs';
 import {
 	ResourceEmoji,
 	ResourceColors,
+	ResourceNames,
 	PlayerColors,
 } from './GraphicalConstants.mjs';
 
@@ -91,7 +92,8 @@ class Hexagon extends Div {
 			nodes,
 		};
 
-		this.t = this.r = this.active = null;
+		this.t = this.r = null;
+		this.active = true;
 	}
 	getHexagon() {
 		return this.elements.hexagon;
@@ -125,6 +127,7 @@ class Hexagon extends Div {
 		this.setBackgroundLabel(ResourceEmoji[r]);
 		this.elements.hexagon.querySelector('polygon').style.fill =
 			ResourceColors[r];
+		this.htmlElement.title = ResourceNames[r];
 		this.t = t;
 		this.r = r;
 	}

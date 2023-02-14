@@ -365,21 +365,23 @@ class GameRoom {
 				const { x1, y1, x2, y2 } = data;
 				const robberAdd = this.game.getNode(x1, y1);
 				const robberRemove = this.game.getNode(x2, y2);
-				if (!robberAdd)
+
+				player.queued.robber -= 1;
+				if (robberAdd) {
+					robberAdd.setRobber(
+						this.game.getTime() + this.configuration.ROBBER_DURATION,
+					);
+					this.broadcast('gridStatus', { x: x1, y: y1, a: false });
+				} else if (!robberRemove) {
 					return this.protocolViolation(
 						socket,
 						'Robber fail - invalid robberAdd position',
 					);
-
-				player.queued.robber -= 1;
-				robberAdd.setRobber(
-					this.game.getTime() + this.configuration.ROBBER_DURATION,
-				);
+				}
 				if (robberRemove) {
 					robberRemove.clearRobber();
-					this.broadcast('gridStatus', { x: x1, y: y1, a: true });
+					this.broadcast('gridStatus', { x: x2, y: y2, a: true });
 				}
-				this.broadcast('gridStatus', { x: x1, y: y1, a: false });
 				break;
 			}
 			case 'act': {

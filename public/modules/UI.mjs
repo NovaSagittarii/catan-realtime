@@ -78,15 +78,29 @@ const STRUCTURE = {
 	CITY_LARGE: 2,
 	ROAD: 8,
 };
+let pastX, pastY;
 function processInput(type, x, y, z) {
 	console.log('processInput', { type, x, y, z });
 	switch (type) {
 		case 'node': {
 			// TODO : robber
-			socket.emit('robber', {
-				x1: x,
-				y1: y,
-			});
+			console.log(pastX, pastY, hexgrid.getNode(x, y).active);
+			const noChange = pastX === x && pastY === y;
+			if (!hexgrid.getNode(x, y).active && !noChange) [pastX, pastY] = [x, y];
+			else {
+				socket.emit('robber', {
+					x1: noChange ? NaN : x,
+					y1: noChange ? NaN : y,
+					x2: pastX,
+					y2: pastY,
+				});
+				console.log({
+					x1: noChange ? NaN : x,
+					y1: noChange ? NaN : y,
+					x2: pastX,
+					y2: pastY,
+				});
+			}
 			break;
 		}
 		case 'vertex': {
