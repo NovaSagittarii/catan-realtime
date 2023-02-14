@@ -63,7 +63,7 @@ document.body.append(buttonDevelopmentCard.getElement());
 			new Button(`use ${n}`, ['useCard'], () =>
 				socket.emit('act', {
 					card: i,
-					resource: i === 2 ? prompt('resource id') : undefined,
+					resource: i === 2 ? +prompt('resource id') : undefined,
 				}),
 			).getElement(),
 		);

@@ -1,6 +1,6 @@
 import { Game } from './Game.mjs';
 import { Player } from './Player.mjs';
-import { ResourceType } from './Resources.mjs';
+import { ResourceType, ResourceName } from './Resources.mjs';
 import { StructureType, StructureCost } from './Structures.mjs';
 import { CardType, CardCost } from './Cards.mjs';
 import { weightedSelect } from './Util.mjs';
@@ -411,7 +411,7 @@ class GameRoom {
 						player.points += 1;
 						break;
 					case CardType.MONOPOLY:
-						if (!(resource in ResourceType))
+						if (!(resource in ResourceName))
 							return this.protocolViolation(
 								socket,
 								'Act fail (monopoly) - invalid resource',
@@ -423,6 +423,10 @@ class GameRoom {
 							resourceYield += amt;
 						}
 						player.resources[resource] = resourceYield; // and then just transfer as a batch
+						this.broadcast(
+							'playerData',
+							Object.values(this.players).map((player) => player.export()),
+						);
 						break;
 					case CardType.RESOURCES:
 						for (let i = 0; i < ResourceName.length; i++)
