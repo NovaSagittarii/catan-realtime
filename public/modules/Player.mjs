@@ -53,6 +53,9 @@ class Player extends Div {
 	setTime(newTime) {
 		this.attributes.nextRoll.setProgress(newTime);
 	}
+	destroy() {
+		this.htmlElement.parentNode.removeChild(this.htmlElement);
+	}
 }
 
 export { Player };

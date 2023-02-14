@@ -32,6 +32,10 @@ class PlayerDisplay extends Div {
 		const player = this.players[id];
 		for (const k in properties) player.sync(k, properties[k]);
 	}
+	remove(id) {
+		this.players[id].destroy();
+		delete this.players[id];
+	}
 	setHost(id) {
 		this.host = id;
 		if (this.players[id])

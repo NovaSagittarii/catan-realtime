@@ -137,6 +137,12 @@ textarea {
 	align-items: center;
 	width: fit-content;
 	margin: 5px;
+	padding-right: 3px;
+}
+.panel.playerSelf {
+	border-top: 1px dotted black;
+	border-right: 1px dotted black;
+	border-radius: 4px;
 }
 .panel > .attribute {
 	width: 100%;

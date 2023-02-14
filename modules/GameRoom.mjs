@@ -96,12 +96,15 @@ class GameRoom {
 	}
 	leave(socket) {
 		const needsNewHost = this.players[socket.id] === this.host;
+		const playerId = this.players[socket.id].id;
 		delete this.players[socket.id];
 		if (needsNewHost) this.reassignHost();
 		// console.log(this.players);
 		if (Object.keys(this.players).length === 0) {
 			console.log('>> room <%s> is empty -- game reset', this.name);
 			this.initialize();
+		} else {
+			this.broadcast('left', playerId);
 		}
 	}
 	handleEvent(socket, event, data) {

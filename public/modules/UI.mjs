@@ -172,6 +172,7 @@ socket.on('playerData', (playerData) => {
 		playerDisplay.sync({ points, id, name, nextRoll, roll, robber, road, city_small, resources, blueprints, cards });
 	}
 });
+socket.on('left', (id) => playerDisplay.remove(id));
 socket.on('gridData', (gridData) => {
 	for (const { x, y, z, b, i } of gridData) {
 		const [building, playerId] = [b, i];
