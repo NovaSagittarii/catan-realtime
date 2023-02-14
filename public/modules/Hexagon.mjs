@@ -72,19 +72,19 @@ class Hexagon extends Div {
 
 		this.setPosition(x, y);
 
-		const labelDiv = new Div('label').getElement();
-		labelDiv.style.left = (100 / 2).toFixed(0) + 'px';
-		labelDiv.style.top = ((bottom - top) / 2).toFixed(0) + 'px';
-		this.label = document.createTextNode('-');
-		labelDiv.append(this.label);
-		div.append(labelDiv);
-
 		const backgroundDiv = new Div('backgroundLabel').getElement();
 		backgroundDiv.style.left = (100 / 2).toFixed(0) + 'px';
 		backgroundDiv.style.top = ((bottom - top) / 2).toFixed(0) + 'px';
 		this.backgroundLabel = document.createTextNode('=');
 		backgroundDiv.append(this.backgroundLabel);
 		div.append(backgroundDiv);
+
+		const labelDiv = new Div('label').getElement();
+		labelDiv.style.left = (100 / 2).toFixed(0) + 'px';
+		labelDiv.style.top = ((bottom - top) / 2).toFixed(0) + 'px';
+		this.label = document.createTextNode('-');
+		labelDiv.append(this.label);
+		div.append(labelDiv);
 
 		this.elements = {
 			hexagon,
@@ -127,7 +127,7 @@ class Hexagon extends Div {
 		this.setBackgroundLabel(ResourceEmoji[r]);
 		this.elements.hexagon.querySelector('polygon').style.fill =
 			ResourceColors[r];
-		this.htmlElement.title = ResourceNames[r];
+		this.htmlElement.title = `${ResourceNames[r]} (${t})`;
 		this.t = t;
 		this.r = r;
 	}
