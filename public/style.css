@@ -116,7 +116,7 @@ textarea {
 	animation-iteration-count: infinite;
 	stroke: red;
 	stroke-width: 2;
-	stroke-dasharray: 10,5;
+	stroke-dasharray: 10, 5;
 }
 
 /* Player.mjs PlayerDisplay.mjs */
@@ -124,6 +124,8 @@ textarea {
 	position: relative;
 	float: right;
 	display: flex;
+	pointer-events: none;
+	user-select: none;
 }
 .panel {
 	display: flex;
@@ -204,6 +206,7 @@ textarea {
 /* coding in css :^) */
 button.startGame {
 	display: none;
+	float: right;
 }
 :has(.panel.playerHost.playerSelf) button.startGame {
 	display: inline !important;
