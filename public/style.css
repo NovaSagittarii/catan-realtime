@@ -38,7 +38,7 @@ textarea {
 	transform: translate(-50%, -50%);
 	filter: drop-shadow(0px 0px 2px #ffffff);
 	user-select: none;
-	opacity: 0.5;
+	opacity: 1;
 	transition: 0.2s all cubic-bezier(0.17, 0.67, 0.83, 0.67);
 }
 .hexagonNode .backgroundLabel {

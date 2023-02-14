@@ -14,6 +14,13 @@ const hexagonGrid = new HexagonGrid({
 		node: (x, y, z) => processInput('node', x, y, z),
 		vertex: (x, y, z) => processInput('vertex', x, y, z),
 		edge: (x, y, z) => processInput('edge', x, y, z),
+		nodeOver: () => {},
+		vertexOver: (empty) =>
+			playerDisplay.setResourceCostPreview(
+				empty ? [1, 1, 1, 1, 0] : [0, 0, 0, 2, 3],
+			),
+		edgeOver: () => playerDisplay.setResourceCostPreview([1, 1, 0, 0, 0]),
+		mouseOut: () => playerDisplay.setResourceCostPreview([0, 0, 0, 0, 0]),
 	},
 });
 

@@ -4,6 +4,7 @@ import {
 	NumericalAttribute,
 	CooldownAttribute,
 	ListAttribute,
+	ListAttributeWithPreview,
 } from './Attributes.mjs';
 import {
 	ResourceEmoji,
@@ -23,7 +24,7 @@ class Player extends Div {
 			robber: new NumericalAttribute('Robbers to place', 0),
 			road: new NumericalAttribute('Roads to place', 0),
 			city_small: new NumericalAttribute('Settlements to place', 0),
-			resources: new ListAttribute(
+			resources: new ListAttributeWithPreview(
 				'',
 				['Brick', 'Lumber', 'Wool', 'Grain', 'Ore'].map(
 					(x, i) => ResourceEmoji[i] + ' ' + x,

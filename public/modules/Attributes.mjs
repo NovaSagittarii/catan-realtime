@@ -79,6 +79,20 @@ class ListAttribute extends Attribute {
 		}
 	}
 }
+class ListAttributeWithPreview extends ListAttribute {
+	constructor(attribute, listNames) {
+		super(attribute, listNames);
+		this.previews = listNames.map(() => document.createTextNode(''));
+		this.previews.forEach((textAttribute, i) =>
+			this.values[i].getElement().lastChild.append(textAttribute),
+		);
+	}
+	syncPreview(newData) {
+		for (const i in newData) {
+			this.previews[i].nodeValue = newData[i];
+		}
+	}
+}
 
 export {
 	Attribute,
@@ -86,4 +100,5 @@ export {
 	NumericalAttribute,
 	CooldownAttribute,
 	ListAttribute,
+	ListAttributeWithPreview,
 };

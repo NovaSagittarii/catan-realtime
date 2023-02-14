@@ -32,9 +32,23 @@ class HexagonGrid extends Div {
 						// this.process(y1, x1, 8 | z2),
 						callbacks?.edge(x1, y1, 8 | z2),
 					);
+					h.getEdge(z).addEventListener('mouseover', () =>
+						callbacks?.edgeOver(),
+					);
+					h.getEdge(z).addEventListener('mouseout', () =>
+						callbacks?.mouseOut(),
+					);
 					h.getVertex(z).addEventListener('click', () =>
 						// this.process(y1, x1, z2),
 						callbacks?.vertex(x1, y1, z2),
+					);
+					h.getVertex(z).addEventListener('mouseover', () =>
+						callbacks?.vertexOver(
+							h.getVertex(z).classList.contains('nullStructure'),
+						),
+					);
+					h.getVertex(z).addEventListener('mouseout', () =>
+						callbacks?.mouseOut(),
 					);
 				}
 				// h.setLabel([i+k, j+Math.max(i,0)-1]);

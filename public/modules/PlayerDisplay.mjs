@@ -49,6 +49,13 @@ class PlayerDisplay extends Div {
 			player.setTime(newTime);
 		}
 	}
+	setResourceCostPreview(resources) {
+		this.players[this.self].attributes.resources.syncPreview(
+			resources
+				.map((x) => -x)
+				.map((x) => (x ? `(${x > 0 ? '+' : ''}${x})` : '')),
+		);
+	}
 }
 
 export { PlayerDisplay };
