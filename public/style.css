@@ -110,8 +110,13 @@ textarea {
 .hexagon:hover {
 	transform: scale(0.9, 0.9);
 }
-.inactive {
-	filter: grayscale(1);
+.inactive polygon {
+	animation-name: flashingOutline;
+	animation-duration: 2s;
+	animation-iteration-count: infinite;
+	stroke: red;
+	stroke-width: 2;
+	stroke-dasharray: 10,5;
 }
 
 /* Player.mjs PlayerDisplay.mjs */
