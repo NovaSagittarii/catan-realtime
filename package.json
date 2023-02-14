@@ -17,5 +17,8 @@
     "https": "^1.0.0",
     "socket.io": "^4.6.0"
   },
+  "engines": {
+    "node": "16"
+  },
   "type": "module"
 }
