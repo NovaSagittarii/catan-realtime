@@ -6,4 +6,18 @@ function weightedSelect(array) {
 		if (acc >= past) return i;
 	}
 }
-export { weightedSelect };
+function shuffle(array) {
+	// https://stackoverflow.com/a/2450976
+	let currentIndex = array.length,
+		randomIndex;
+	while (currentIndex != 0) {
+		randomIndex = Math.floor(Math.random() * currentIndex);
+		currentIndex--;
+		[array[currentIndex], array[randomIndex]] = [
+			array[randomIndex],
+			array[currentIndex],
+		];
+	}
+	return array;
+}
+export { weightedSelect, shuffle };
