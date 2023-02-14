@@ -35,8 +35,11 @@ document.body.append(hexagonGrid.getElement(), playerDisplay.getElement());
 socket = io({ transports: ['websocket'] });
 hexgrid = hexagonGrid;
 
-const buttonStartGame = new Button('Start Game', ['startGame'], () =>
-	socket.emit('start'),
+const buttonStartGame = new ButtonKeybind(
+	13,
+	'Start Game (enter)',
+	['startGame'],
+	() => socket.emit('start'),
 );
 const buttonRoll = new ButtonKeybind(32, 'Roll (space)', ['rollDice'], () =>
 	socket.emit('roll'),

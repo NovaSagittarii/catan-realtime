@@ -1,5 +1,17 @@
 import { HTMLElement } from './HTMLElement.mjs';
 
+const keys = {};
+const onkeycode = {};
+document.body.addEventListener('keydown', (e) => {
+	if (keys[e.keyCode]) return;
+	keys[e.keyCode] = true;
+	const f = onkeycode[e.keyCode];
+	if (f) f();
+});
+document.body.addEventListener('keyup', (e) => {
+	keys[e.keyCode] = false;
+});
+
 // every day i am reminded that web frameworks exist for a reason
 class Div extends HTMLElement {
 	constructor(...classNames) {
@@ -21,6 +33,7 @@ class Button extends HTMLElement {
 class ButtonKeybind extends Button {
 	constructor(keycode, label, classNames, onclick) {
 		super(label, classNames, onclick);
+		onkeycode[keycode] = () => onclick();
 	}
 }
 

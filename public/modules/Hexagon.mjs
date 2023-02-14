@@ -130,6 +130,7 @@ class Hexagon extends Div {
 	}
 	applyStatus(active) {
 		if (active) {
+			this.htmlElement.classList.remove('dropShadow'); // don't reanimate it
 			this.htmlElement.classList.remove('inactive');
 		} else {
 			this.htmlElement.classList.add('inactive');
