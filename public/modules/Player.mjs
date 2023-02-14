@@ -26,7 +26,7 @@ class Player extends Div {
 			city_small: new NumericalAttribute('Settlements to place', 0),
 			resources: new ListAttributeWithPreview(
 				'',
-				['Brick', 'Lumber', 'Wool', 'Grain', 'Ore'].map(
+				['Brick', 'Lumber', 'Sheep', 'Wheat', 'Ore'].map(
 					(x, i) => ResourceEmoji[i] + ' ' + x,
 				),
 			),
