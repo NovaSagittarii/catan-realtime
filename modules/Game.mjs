@@ -148,7 +148,7 @@ class Game {
 		for (const i in this.grid) {
 			const row = this.grid[i];
 			for (const j in row) {
-				yield [i, j, row[j]];
+				yield [+i, +j, row[j][0]];
 			}
 		}
 	}
