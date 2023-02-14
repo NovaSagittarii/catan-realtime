@@ -20,8 +20,8 @@ textarea {
 .hexagonGrid {
 	position: relative;
 	/*margin: 20px;*/
-	top: 20px;
-	left: 20px;
+	top: 50px;
+	left: 50px;
 }
 .hexagonNode {
 	position: absolute;
@@ -110,6 +110,9 @@ textarea {
 .hexagon:hover {
 	transform: scale(0.9, 0.9);
 }
+.inactive {
+	filter: grayscale(1);
+}
 
 /* Player.mjs PlayerDisplay.mjs */
 .playerDisplay {
@@ -165,7 +168,7 @@ textarea {
 .hexagon {
 	filter: drop-shadow(0px 0px 0px transparent);
 }
-.dropShadow {
+.dropShadow:not(.inactive) {
 	animation-name: dropShadow;
 	animation-duration: 5s;
 }
@@ -176,6 +179,20 @@ textarea {
 	}
 	100% {
 		filter: drop-shadow(0px 0px 0px transparent);
+	}
+}
+.playerSelf .flashingOutline {
+	animation-name: flashingOutline;
+	animation-duration: 2s;
+	animation-iteration-count: infinite;
+}
+@keyframes flashingOutline {
+	0%,
+	100% {
+		filter: drop-shadow(0px 0px 1px transparent);
+	}
+	50% {
+		filter: drop-shadow(0px 0px 3px red);
 	}
 }
 

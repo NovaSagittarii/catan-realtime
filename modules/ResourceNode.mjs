@@ -12,12 +12,15 @@ class ResourceNode {
 				~~(Math.random() * Object.values(ResourceType).length)
 			];
 		this.robberExpire = -1;
+		this.robberActive = false;
 	}
 	setRobber(until) {
 		this.robberExpire = until;
+		this.robberActive = true;
 	}
 	clearRobber() {
 		this.robberExpire = -1;
+		this.robberActive = false;
 	}
 	isActive(time) {
 		return this.robberExpire < time;

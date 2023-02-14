@@ -9,10 +9,12 @@ const Cards = {
 };
 
 const CardName = Object.keys(Cards);
-const CardType = {};
+const CardType = {
+	PURCHASE_CARD: -1,
+};
 CardName.forEach((x, i) => (CardType[x.toUpperCase()] = i));
 const CardCount = CardName.length;
 const InitialCard = Object.values(Cards);
-const CardCost = [0, 0, 1, 1, 1];
+const CardCost = [0, 0, 1, 1, 1]; // NOTE: Game.configuartion is used!!
 
 export { CardName, CardType, CardCount, InitialCard, CardCost };

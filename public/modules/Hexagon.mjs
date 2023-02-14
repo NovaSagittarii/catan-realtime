@@ -91,7 +91,7 @@ class Hexagon extends Div {
 			nodes,
 		};
 
-		this.t = this.r = null;
+		this.t = this.r = this.active = null;
 	}
 	getHexagon() {
 		return this.elements.hexagon;
@@ -127,6 +127,14 @@ class Hexagon extends Div {
 			ResourceColors[r];
 		this.t = t;
 		this.r = r;
+	}
+	applyStatus(active) {
+		if (active) {
+			this.htmlElement.classList.remove('inactive');
+		} else {
+			this.htmlElement.classList.add('inactive');
+		}
+		this.active = active;
 	}
 	sync(z, owner, structure) {
 		// console.log('hexnode.sync', {z, owner, structure});

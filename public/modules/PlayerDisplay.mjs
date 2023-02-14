@@ -50,7 +50,7 @@ class PlayerDisplay extends Div {
 		}
 	}
 	setResourceCostPreview(resources) {
-		this.players[this.self].attributes.resources.syncPreview(
+		this.players[this.self]?.attributes.resources.syncPreview(
 			resources
 				.map((x) => -x)
 				.map((x) => (x ? `(${x > 0 ? '+' : ''}${x})` : '')),

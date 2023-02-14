@@ -144,16 +144,26 @@ class Game {
 		);
 		return grid;
 	}
+	*getNodes() {
+		for (const i in this.grid) {
+			const row = this.grid[i];
+			for (const j in row) {
+				yield [i, j, row[j]];
+			}
+		}
+	}
 	processRoll(x, t) {
 		// console.log('processRoll', {x, t});
 		for (const row of this.grid) {
 			for (const [node, vertices, edges] of row) {
-				if (node.trigger === x && node.isActive(t)) {
-					for (const vertex of vertices) {
-						if (vertex.getOwner()) {
-							vertex.getOwner().resources[node.resourceType] +=
-								vertex.getStructure() === StructureType.CITY_LARGE ? 2 : 1;
-							// TODO : handle limited resources (toss results into array and shuffle, process in order)
+				if (node.isActive(t)) {
+					if (node.trigger === x) {
+						for (const vertex of vertices) {
+							if (vertex.getOwner()) {
+								vertex.getOwner().resources[node.resourceType] +=
+									vertex.getStructure() === StructureType.CITY_LARGE ? 2 : 1;
+								// TODO : handle limited resources (toss results into array and shuffle, process in order)
+							}
 						}
 					}
 				}

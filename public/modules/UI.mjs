@@ -1,7 +1,7 @@
 import { HexagonGrid } from './HexagonGrid.mjs';
 import { PlayerDisplay } from './PlayerDisplay.mjs';
 import { RollAnimator } from './RollAnimator.mjs';
-import { Button } from './HTMLElements.mjs';
+import { Button, ButtonKeybind } from './HTMLElements.mjs';
 
 const configuration = {
 	host: null,
@@ -38,8 +38,37 @@ hexgrid = hexagonGrid;
 const buttonStartGame = new Button('Start Game', ['startGame'], () =>
 	socket.emit('start'),
 );
-const buttonRoll = new Button('Roll', ['rollDice'], () => socket.emit('roll'));
+const buttonRoll = new ButtonKeybind(32, 'Roll (space)', ['rollDice'], () =>
+	socket.emit('roll'),
+);
+const buttonDevelopmentCard = new Button('Buy card', ['buyCard'], () =>
+	socket.emit('act', { card: -1 }),
+);
+buttonDevelopmentCard
+	.getElement()
+	.addEventListener('mouseover', () =>
+		playerDisplay.setResourceCostPreview([0, 0, 1, 1, 1]),
+	);
+buttonDevelopmentCard
+	.getElement()
+	.addEventListener('mouseout', () =>
+		playerDisplay.setResourceCostPreview([0, 0, 0, 0, 0]),
+	);
+
 document.body.append(buttonStartGame.getElement(), buttonRoll.getElement());
+document.body.append(buttonDevelopmentCard.getElement());
+['Knight', 'Point', 'Monopoly', 'Resources', 'Road construction'].map(
+	(n, i) => {
+		document.body.append(
+			new Button(`use ${n}`, ['useCard'], () =>
+				socket.emit('act', {
+					card: i,
+					resource: i === 2 ? prompt('resource id') : undefined,
+				}),
+			).getElement(),
+		);
+	},
+);
 
 const STRUCTURE = {
 	CITY_SMALL: 1,
@@ -51,6 +80,10 @@ function processInput(type, x, y, z) {
 	switch (type) {
 		case 'node': {
 			// TODO : robber
+			socket.emit('robber', {
+				x1: x,
+				y1: y,
+			});
 			break;
 		}
 		case 'vertex': {
@@ -127,6 +160,11 @@ socket.on('gridData', (gridData) => {
 		const [building, playerId] = [b, i];
 		hexgrid.sync({ x, y, z, building, playerId });
 	}
+});
+socket.on('gridStatus', ({ x, y, a }) => {
+	console.log('gridStatus', { x, y, a });
+	const active = a;
+	hexgrid.applyStatus(x, y, active);
 });
 socket.on('roll', (value) => {
 	// console.log(value);

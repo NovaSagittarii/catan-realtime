@@ -69,6 +69,9 @@ class HexagonGrid extends Div {
 			}
 		}
 	}
+	applyStatus(x, y, active) {
+		this.grid[y][x].applyStatus(active);
+	}
 	sync({ x, y, z, building, playerId }) {
 		const nodeOffset = [
 			[

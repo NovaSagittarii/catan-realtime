@@ -18,5 +18,10 @@ class Button extends HTMLElement {
 		this.htmlElement.append(document.createTextNode(label));
 	}
 }
+class ButtonKeybind extends Button {
+	constructor(keycode, label, classNames, onclick) {
+		super(label, classNames, onclick);
+	}
+}
 
-export { HTMLElement, Div, Span, Button };
+export { HTMLElement, Div, Span, Button, ButtonKeybind };

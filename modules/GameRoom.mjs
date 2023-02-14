@@ -3,6 +3,7 @@ import { Player } from './Player.mjs';
 import { ResourceType } from './Resources.mjs';
 import { StructureType, StructureCost } from './Structures.mjs';
 import { CardType, CardCost } from './Cards.mjs';
+import { weightedSelect } from './Util.mjs';
 
 function GameRoomConfiguration() {
 	// units are in ticks (1000/TICKER_INTERVAL = 1 tick)
@@ -12,6 +13,8 @@ function GameRoomConfiguration() {
 	this.ROLL_COOLDOWN = 3 * tps;
 	this.ROBBER_DURATION = 25 * tps;
 	this.PLENTY_BONUS = 1;
+
+	this.CARD_COST = [0, 0, 1, 1, 1];
 }
 
 class GameRoom {
@@ -372,14 +375,35 @@ class GameRoom {
 				robberAdd.setRobber(
 					this.game.getTime() + this.configuration.ROBBER_DURATION,
 				);
-				if (robberRemove) robberRemove.clearRobber();
+				if (robberRemove) {
+					robberRemove.clearRobber();
+					this.broadcast('gridStatus', { x: x1, y: y1, a: true });
+				}
+				this.broadcast('gridStatus', { x: x1, y: y1, a: false });
 				break;
 			}
 			case 'act': {
 				const { card, resource } = data;
-				if (player.cards[card] <= 0)
+				if (card !== CardType.PURCHASE_CARD && player.cards[card] <= 0)
 					return this.protocolViolation(socket, 'Act fail - insufficient card');
 				switch (card) {
+					case CardType.PURCHASE_CARD:
+						// weighted random selection
+						let sufficientResources = this.configuration.CARD_COST.map(
+							(x, i) => x <= player.resources[i],
+						).reduce((a, b) => a && b, true);
+						if (!sufficientResources)
+							return this.protocolViolation(
+								socket,
+								'Act fail - insufficient resources',
+							);
+						const cardId = weightedSelect(this.game.cards);
+						// TODO : dev card scarcity?
+						player.cards[cardId]++;
+						this.configuration.CARD_COST.forEach(
+							(x, i) => (player.resources[i] -= x),
+						);
+						break;
 					case CardType.KNIGHT:
 						player.queued.robber += 1;
 						break;
@@ -401,7 +425,7 @@ class GameRoom {
 						player.resources[resource] = resourceYield; // and then just transfer as a batch
 						break;
 					case CardType.RESOURCES:
-						for (let i = 0; i < ResourceType.length; i++)
+						for (let i = 0; i < ResourceName.length; i++)
 							player.resources[i] += this.configuration.PLENTY_BONUS;
 						break;
 					case CardType.ROAD:
@@ -425,7 +449,18 @@ class GameRoom {
 				.map((x) => ~~(1 + 6 * Math.random()))
 				.reduce((a, b) => a + b);
 			// console.log('processing roll result %i', rollResult);
-			this.game.processRoll(rollResult, this.game.getTime());
+			if (rollResult === 7) {
+				player.queued.robber += 1;
+				// TODO : return n resources
+			} else this.game.processRoll(rollResult, this.game.getTime());
+
+			// TODO : implement queue?
+			for (const [i, j, node] of this.game.getNodes()) {
+				if (node.robberActive && node.isActive(this.game.getTime())) {
+					node.clearRobber();
+					this.broadcast('gridStatus', { x: j, y: i, a: true });
+				}
+			}
 			this.broadcast('roll', rollResult);
 			this.broadcast('playerData', [player.export()]);
 		}

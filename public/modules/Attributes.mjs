@@ -29,6 +29,7 @@ class TextAttribute extends Attribute {
 class NumericalAttribute extends TextAttribute {
 	constructor(attribute, value) {
 		super(attribute, value);
+		this.htmlElement.classList.add('flashingOutline');
 	}
 	sync(newNumber) {
 		super.sync(newNumber);
