@@ -314,11 +314,14 @@ class GameRoom {
 				// take cost and update grid
 				if (sufficientResources) {
 					StructureCost[building].forEach((x, i) => (player.resources[i] -= x));
-					// TODO: if adding more buildings, fixing building->playerBlueprint mapping will need to be fixed
-					player.blueprints[building & 7]--;
-					if (building === StructureType.CITY_LARGE)
-						player.blueprints[StructureType.CITY_SMALL]++;
 				}
+				// always take blueprint
+				// TODO: if adding more buildings, fixing building->playerBlueprint mapping will need to be fixed
+				player.blueprints[building & 7]--;
+				// refund city_small when building city_large
+				if (building === StructureType.CITY_LARGE)
+					player.blueprints[StructureType.CITY_SMALL]++;
+
 				this.build(location, player, building);
 				// update everyone something new is built
 				this.broadcast('gridData', [
