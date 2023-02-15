@@ -10,6 +10,7 @@ import {
 	ResourceEmoji,
 	StructureEmoji,
 	CardEmoji,
+	PlayerColors,
 } from './GraphicalConstants.mjs';
 
 class Player extends Div {
@@ -44,6 +45,7 @@ class Player extends Div {
 			),
 		};
 		this.attributes.name.getElement().classList.add('playerName');
+		this.attributes.name.getElement().style.color = PlayerColors[id];
 		for (const attribute of Object.values(this.attributes))
 			this.htmlElement.append(attribute.getElement());
 	}
