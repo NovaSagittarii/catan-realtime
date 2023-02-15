@@ -176,23 +176,12 @@ function query(x, y, z) {
 socket.on('ans', (data) => console.log('response', data));
 socket.on('sound', (file) => console.log('playsound', file));
 socket.on('notify', (message) => console.log('alert', message));
-socket.on('rooms', (rooms) => {
+socket.on('rooms', async (rooms) => {
 	console.log('rooms', rooms);
 	socket.emit('join', {
 		id: rooms[0],
-		name: 'test',
+		name: prompt('enter username'),
 	});
-
-	setTimeout(() => {
-		// socket.emit('start');
-		// for (let i = 0; i < 3; i++)
-		// 	socket.emit('build', {
-		// 		x: 2,
-		// 		y: 2,
-		// 		z: i,
-		// 		building: 1,
-		// 	});
-	}, 100);
 });
 // socket.on('room')
 socket.on('configuration', ({ g, h }) => {
