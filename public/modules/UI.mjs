@@ -68,38 +68,30 @@ document.body.append(buttonDevelopmentCard.getElement());
 const selectModalResource = new SelectModal({
 	title: 'Select a resource',
 	choices: ['Brick', 'Lumber', 'Wool', 'Grain', 'Ore'],
-	callbacks: [...new Array(5)].map((_, i) => {
-		return () => {
-			console.log('take resource', i);
-			socket.emit('act', { card: 2, resource: i });
-		};
-	}),
 });
 const selectModalCard = new SelectModal({
 	title: 'Select a card to use',
 	choices: ['Knight', 'Point', 'Monopoly', 'Resources', 'Road construction'],
-	callbacks: [...new Array(5)].map((_, i) => {
-		// the callbacks are very messy... maybe use promises instead
-		if (i == 2) {
-			return () => {
-				// console.log('tryin to do an activate')
-				// console.log(selectModalResource);
-				selectModalResource.activate().a();
-				// it does not work properly without .a()... for some reason (even though it returns nothing)
-				// catching the error will also break it (.active method isn't called properly)
-			};
-		} else {
-			return () => {
-				console.log('play card', i);
-				socket.emit('act', { card: i });
-			};
-		}
-	}),
 });
 document.body.append(
-	new ButtonKeybind(88, 'Play card (x)', ['useCard'], () =>
-		selectModalCard.activate(),
-	).getElement(),
+	new ButtonKeybind(88, 'Play card (x)', ['useCard'], async () => {
+		selectModalCard
+			.activate()
+			.then((x) => {
+				console.log('action', x);
+				if (x === 2) {
+					selectModalResource
+						.activate()
+						.then((y) => {
+							socket.emit('act', { card: 2, resource: y });
+						})
+						.catch(() => console.log('cancelled choose resource'));
+				} else {
+					socket.emit('act', { card: x });
+				}
+			})
+			.catch(() => console.log('cancelled choose card'));
+	}).getElement(),
 );
 
 document.body.append(
