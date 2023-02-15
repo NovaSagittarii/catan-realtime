@@ -197,7 +197,7 @@ socket.on('rooms', async (rooms) => {
 
 socket.emit('join', {
 	name: await inputModal.prompt('enter username'),
-	id: await inputModal.prompt('enter room name (leave empty to make new)'),
+	id: await inputModal.prompt('enter room name (leave empty to make new)', 'kitchen'),
 });
 
 // socket.on('room')
