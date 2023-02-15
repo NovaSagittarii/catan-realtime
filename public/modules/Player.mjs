@@ -45,7 +45,8 @@ class Player extends Div {
 			),
 		};
 		this.attributes.name.getElement().classList.add('playerName');
-		this.attributes.name.getElement().style.color = PlayerColors[id];
+		this.attributes.name.getElement().style.color =
+			PlayerColors[id % PlayerColors.length];
 		for (const attribute of Object.values(this.attributes))
 			this.htmlElement.append(attribute.getElement());
 	}
