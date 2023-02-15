@@ -97,8 +97,8 @@ class GameRoom {
 	}
 	leave(socket) {
 		const needsNewHost = this.players[socket.id] === this.host;
-		const playerId = this.players[socket.id].id;
-		delete this.players[socket.id];
+		const playerId = this.players[socket.id]?.id;
+		if (playerId) delete this.players[socket.id];
 		if (needsNewHost) this.reassignHost();
 		// console.log(this.players);
 		if (Object.keys(this.players).length === 0) {
