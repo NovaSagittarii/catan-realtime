@@ -140,6 +140,16 @@ class Hexagon extends Div {
 		}
 		this.active = active;
 	}
+	initialize() {
+		this.elements.lines.forEach((line) => {
+			line.style.removeProperty('stroke');
+		});
+		this.elements.nodes.forEach((node) => {
+			node.style.removeProperty('background');
+			node.classList.remove('citySmall', 'cityLarge');
+			node.classList.add('nullStructure');
+		});
+	}
 	sync(z, owner, structure) {
 		// console.log('hexnode.sync', {z, owner, structure});
 		if (structure & 16)

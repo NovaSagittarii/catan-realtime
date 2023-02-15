@@ -64,6 +64,7 @@ class HexagonGrid extends Div {
 		for (let i = 0; i < grid.length; i++) {
 			for (let j = 0; j < grid[i].length; j++) {
 				if (grid[i][j] !== null) {
+					this.grid[i][j].initialize();
 					this.grid[i][j].applyConfiguration(grid[i][j]);
 				}
 			}
