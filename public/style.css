@@ -277,6 +277,15 @@ textarea {
 	pointer-events: none;
 }
 
+/* roomName */
+.roomName {
+	right: 0;
+	font-family: monospace;
+	bottom: 0;
+	position: fixed;
+	margin: 10px;
+}
+
 /* coding in css :^) */
 button.startGame {
 	display: none;

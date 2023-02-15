@@ -15,20 +15,30 @@ const io = new Server(server);
 const config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
 
 const rooms = {
-	kitchen: new GameRoom(io),
+	kitchen: new GameRoom(io, { name: 'kitchen', persistent: true }),
 };
 
 const players = {};
 
 io.on('connection', function (socket) {
+	function randomString() {
+		return Math.random().toString(36).substring(2);
+	}
 	var address = socket.handshake.address;
 
 	console.log(' > new connection < ' + address + ' cID: ' + socket.id);
 	socket.on('join', ({ id, name }) => {
-		const room = rooms[id];
-		name = String(name).replace(reservedCharacters, '') || 'a person';
-		if (!players[socket.id] && room && name) {
-			players[socket.id] = rooms[id];
+		if (!players[socket.id]) {
+			let room;
+			if (id !== '') {
+				room = rooms[id];
+			} else {
+				let x = randomString().substring(0, 4);
+				while (x in rooms) x = randomString();
+				room = rooms[x] = new GameRoom(io, { name: x });
+			}
+			name = String(name).replace(reservedCharacters, '') || 'a person';
+			players[socket.id] = room;
 			room.join(socket, name);
 		}
 	});
@@ -37,6 +47,10 @@ io.on('connection', function (socket) {
 		if (room) {
 			room.leave(socket);
 			delete players[socket.id];
+		}
+		if (room.isEmpty() && !room.persistent) {
+			console.log('removing non persistent room <%s>', room.name);
+			delete rooms[room.name];
 		}
 	});
 	socket.on('start', () => {
@@ -59,6 +73,10 @@ io.on('connection', function (socket) {
 		if (room) {
 			room.leave(socket);
 			delete players[socket.id];
+			if (room.isEmpty() && !room.persistent) {
+				console.log('removing non persistent room <%s>', room.name);
+				delete rooms[room.name];
+			}
 		}
 	});
 });

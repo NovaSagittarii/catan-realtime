@@ -4,6 +4,7 @@ import { RollAnimator } from './RollAnimator.mjs';
 import {
 	Button,
 	ButtonKeybind,
+	TextDiv,
 	SelectModal,
 	InputModal,
 } from './HTMLElements.mjs';
@@ -37,7 +38,13 @@ const rollResults = new RollAnimator({
 	nodes: Array.from(hexagonGrid.getNodes()),
 });
 
-document.body.append(hexagonGrid.getElement(), playerDisplay.getElement());
+const roomName = new TextDiv('Room code: ---', 'roomName').getElement();
+
+document.body.append(
+	hexagonGrid.getElement(),
+	playerDisplay.getElement(),
+	roomName,
+);
 
 socket = io({ transports: ['websocket'] });
 hexgrid = hexagonGrid;
@@ -186,13 +193,15 @@ socket.on('sound', (file) => console.log('playsound', file));
 socket.on('notify', (message) => console.log('alert', message));
 socket.on('rooms', async (rooms) => {
 	console.log('rooms', rooms);
-	socket.emit('join', {
-		id: rooms[0],
-		name: await inputModal.prompt('enter username'),
-	});
 });
+
+socket.emit('join', {
+	name: await inputModal.prompt('enter username'),
+	id: await inputModal.prompt('enter room name (leave empty to make new)'),
+});
+
 // socket.on('room')
-socket.on('configuration', ({ g, h }) => {
+socket.on('configuration', ({ g, h, n }) => {
 	if (g !== undefined) {
 		hexgrid.applyConfiguration(g);
 		rollResults.updateLocations();
@@ -200,6 +209,9 @@ socket.on('configuration', ({ g, h }) => {
 	if (h !== undefined) {
 		configuration.host = h;
 		playerDisplay.setHost(h);
+	}
+	if (n !== undefined) {
+		roomName.innerText = `Room code: ${n}`;
 	}
 });
 socket.on('id', (id) => {

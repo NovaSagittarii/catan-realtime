@@ -26,8 +26,8 @@ class GameRoom {
 		IN_PROGRESS: Symbol('RoomState::inProgress'),
 		FINISHED: Symbol('RoomState::finished'),
 	};
-	constructor(io) {
-		this.name = 'ROOM';
+	constructor(io, { name, persistent } = {}) {
+		this.name = name;
 		this.state = GameRoom.RoomState.OPEN;
 		this.configuration = new GameRoomConfiguration();
 		this.players = {};
@@ -35,6 +35,7 @@ class GameRoom {
 		this.host = null;
 		this.game = new Game();
 		this.io = io;
+		this.persistent = persistent || false;
 	}
 	initialize() {
 		this.state = GameRoom.RoomState.OPEN;
@@ -88,9 +89,10 @@ class GameRoom {
 			return this.protocolViolation(socket, 'join fail - room is not open');
 		this.players[socket.id] = new Player(socket, name);
 		this.players[socket.id].setId(this.playersJoined++);
-		if (Object.keys(this.players).length <= 1) this.reassignHost();
+		if (this.isEmpty()) this.reassignHost();
 		const configuration = {
 			h: this.host?.id,
+			n: this.name,
 		};
 		this.broadcast('configuration', configuration);
 
@@ -99,14 +101,10 @@ class GameRoom {
 		this.broadcast('playerData', playerData);
 	}
 	leave(socket) {
-		console.log('gameroom.leave', socket.id);
+		// console.log('gameroom.leave', socket.id);
 		const needsNewHost = this.players[socket.id] === this.host;
 		const playerId = this.players[socket.id]?.id;
 		if (playerId !== undefined) delete this.players[socket.id];
-		console.log(
-			playerId,
-			Object.values(this.players).map((x) => x.name),
-		);
 		if (needsNewHost) this.reassignHost();
 		// console.log(this.players);
 		if (Object.keys(this.players).length === 0) {
@@ -532,6 +530,9 @@ class GameRoom {
 			};
 			this.broadcast('configuration', configuration);
 		}
+	}
+	isEmpty() {
+		return Object.keys(this.players).length <= 1;
 	}
 }
 

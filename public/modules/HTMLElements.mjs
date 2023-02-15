@@ -129,6 +129,7 @@ class InputModal extends HTMLElement {
 export {
 	HTMLElement,
 	Div,
+	TextDiv,
 	Span,
 	Button,
 	ButtonKeybind,
