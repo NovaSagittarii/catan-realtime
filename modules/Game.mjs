@@ -177,6 +177,9 @@ class Game {
 			callback(this.time);
 		}, tickerInterval);
 	}
+	endTicker() {
+		clearInterval(this.tickerInterval);
+	}
 	tick() {
 		this.time += 1;
 	}

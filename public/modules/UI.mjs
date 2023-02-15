@@ -216,6 +216,7 @@ socket.on('playerData', (playerData) => {
 	}
 });
 socket.on('left', (id) => playerDisplay.remove(id));
+socket.on('end', ({ w }) => playerDisplay.setWinner(w));
 socket.on('gridData', (gridData) => {
 	for (const { x, y, z, b, i } of gridData) {
 		const [building, playerId] = [b, i];

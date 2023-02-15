@@ -16,6 +16,7 @@ function GameRoomConfiguration() {
 
 	this.TRADE_COST = 4;
 	this.CARD_COST = [0, 0, 1, 1, 1];
+	this.POINT_THRESHOLD = 10;
 }
 
 class GameRoom {
@@ -23,6 +24,7 @@ class GameRoom {
 		OPEN: Symbol('RoomState::open'),
 		CLOSED: Symbol('RoomState::closed'),
 		IN_PROGRESS: Symbol('RoomState::inProgress'),
+		FINISHED: Symbol('RoomState::finished'),
 	};
 	constructor(io) {
 		this.name = 'ROOM';
@@ -36,8 +38,8 @@ class GameRoom {
 	}
 	initialize() {
 		this.state = GameRoom.RoomState.OPEN;
-		this.host = null;
 		this.game.initialize();
+		for (const player of Object.values(this.players)) player.initialize();
 	}
 	start(socket) {
 		if (this.host !== this.players[socket.id])
@@ -54,6 +56,7 @@ class GameRoom {
 	}
 	startGame() {
 		if (this.state !== GameRoom.RoomState.IN_PROGRESS) {
+			this.initialize();
 			this.state = GameRoom.RoomState.IN_PROGRESS;
 			this.game.startTicker(this.configuration.TICKER_INTERVAL, (time) => {
 				if (time % Math.floor(100 / this.configuration.TICKER_INTERVAL) === 0) {
@@ -65,7 +68,7 @@ class GameRoom {
 			// console.log(grid);
 			const configuration = {
 				g: grid,
-				h: this.host.id,
+				h: this.host?.id,
 			};
 			const playerData = Object.values(this.players).map((x) => x.export());
 			this.broadcast('configuration', configuration);
@@ -96,9 +99,14 @@ class GameRoom {
 		this.broadcast('playerData', playerData);
 	}
 	leave(socket) {
+		console.log('gameroom.leave', socket.id);
 		const needsNewHost = this.players[socket.id] === this.host;
 		const playerId = this.players[socket.id]?.id;
-		if (playerId) delete this.players[socket.id];
+		if (playerId !== undefined) delete this.players[socket.id];
+		console.log(
+			playerId,
+			Object.values(this.players).map((x) => x.name),
+		);
 		if (needsNewHost) this.reassignHost();
 		// console.log(this.players);
 		if (Object.keys(this.players).length === 0) {
@@ -466,6 +474,11 @@ class GameRoom {
 		}
 		// sync player who initiated the event (TODO: update things affected by action)
 		this.broadcast('playerData', [player.export()]);
+		if (player.points >= this.configuration.POINT_THRESHOLD) {
+			this.state = GameRoom.RoomState.FINISHED;
+			this.game.endTicker();
+			this.broadcast('end', { w: player.id });
+		}
 	}
 	processRoll(player) {
 		// console.log("processing roll for player %s", player.nextRoll, this.game.getTime());

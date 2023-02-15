@@ -31,6 +31,11 @@ class PlayerDisplay extends Div {
 		if (!(id in this.players)) this.addPlayer(id, name);
 		const player = this.players[id];
 		for (const k in properties) player.sync(k, properties[k]);
+		if (points >= 10) {
+			player.getElement().classList.add('winner');
+		} else {
+			player.getElement().classList.remove('winner');
+		}
 	}
 	remove(id) {
 		this.players[id].destroy();
@@ -47,6 +52,9 @@ class PlayerDisplay extends Div {
 		if (this.players[id])
 			this.players[id].getElement().classList.add('playerSelf');
 		else setTimeout(() => this.setSelf(id), 1000);
+	}
+	setWinner(id) {
+		console.log('winner %s %s', id, this.players[id].attributes.name);
 	}
 	updateTime(newTime) {
 		for (const player of Object.values(this.players)) {

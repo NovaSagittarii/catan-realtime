@@ -138,11 +138,15 @@ textarea {
 	width: fit-content;
 	margin: 5px;
 	padding-right: 3px;
+	transition: 1s background cubic-bezier(0.17, 0.67, 0.83, 0.67);
 }
 .panel.playerSelf {
 	border-top: 1px dotted black;
 	border-right: 1px dotted black;
 	border-radius: 4px;
+}
+.panel.winner {
+	background: linear-gradient(90deg, gold, transparent);
 }
 .panel > .attribute {
 	width: 100%;
@@ -279,4 +283,7 @@ button.startGame {
 }
 :has(.panel.playerHost.playerSelf) button.startGame {
 	display: inline !important;
+}
+:has(.winner) .hexagonGrid {
+	filter: sepia(0.4);
 }
