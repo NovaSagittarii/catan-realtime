@@ -1,7 +1,12 @@
 import { HexagonGrid } from './HexagonGrid.mjs';
 import { PlayerDisplay } from './PlayerDisplay.mjs';
 import { RollAnimator } from './RollAnimator.mjs';
-import { Button, ButtonKeybind, SelectModal } from './HTMLElements.mjs';
+import {
+	Button,
+	ButtonKeybind,
+	SelectModal,
+	InputModal,
+} from './HTMLElements.mjs';
 import { ResourceNames } from './GraphicalConstants.mjs';
 
 const configuration = {
@@ -114,9 +119,12 @@ document.body.append(
 	}).getElement(),
 );
 
+const inputModal = new InputModal();
+
 document.body.append(
 	selectModalCard.getElement(),
 	selectModalResource.getElement(),
+	inputModal.getElement(),
 );
 
 const STRUCTURE = {
@@ -180,7 +188,7 @@ socket.on('rooms', async (rooms) => {
 	console.log('rooms', rooms);
 	socket.emit('join', {
 		id: rooms[0],
-		name: prompt('enter username'),
+		name: await inputModal.prompt('enter username'),
 	});
 });
 // socket.on('room')

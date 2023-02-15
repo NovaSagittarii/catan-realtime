@@ -6,6 +6,11 @@ class HTMLElement {
 	getElement() {
 		return this.htmlElement;
 	}
+	static createElement(tagName, ...classNames) {
+		const e = document.createElement(tagName);
+		if (classNames) e.classList.add(...classNames);
+		return e;
+	}
 }
 
 export { HTMLElement };

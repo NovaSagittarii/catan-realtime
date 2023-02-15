@@ -26,7 +26,7 @@ io.on('connection', function (socket) {
 	console.log(' > new connection < ' + address + ' cID: ' + socket.id);
 	socket.on('join', ({ id, name }) => {
 		const room = rooms[id];
-		name = name.replace(reservedCharacters, '') || 'a person';
+		name = String(name).replace(reservedCharacters, '') || 'a person';
 		if (!players[socket.id] && room && name) {
 			players[socket.id] = rooms[id];
 			room.join(socket, name);

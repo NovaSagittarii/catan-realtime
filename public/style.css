@@ -258,6 +258,20 @@ textarea {
 	}
 }
 
+/* inputModal */
+.inputModal {
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+	align-items: center;
+}
+.inputModal.hidden {
+	animation-name: fadeOut;
+	animation-duration: 0.5s;
+	animation-fill-mode: forwards;
+	pointer-events: none;
+}
+
 /* coding in css :^) */
 button.startGame {
 	display: none;

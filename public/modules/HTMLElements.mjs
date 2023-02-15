@@ -89,4 +89,49 @@ class SelectModal extends HTMLElement {
 	};
 });
 
-export { HTMLElement, Div, Span, Button, ButtonKeybind, SelectModal };
+class InputModal extends HTMLElement {
+	constructor() {
+		super('div', 'inputModal', 'hidden');
+		this.label = HTMLElement.createElement('div', 'title');
+		this.input = HTMLElement.createElement('input');
+		this.input.addEventListener('keydown', (e) => {
+			if (e.keyCode === 13) {
+				// Enter
+				if (this.resolveCurrent) {
+					this.resolveCurrent(this.input.value);
+					this.resolve();
+				}
+			}
+		});
+		this.htmlElement.append(this.label, this.input);
+		this.resolveCurrent = null;
+		this.rejectCurrent = null;
+	}
+	prompt(title) {
+		if (this.rejectCurrent) this.rejectCurrent(); // cancel input
+		this.input.value = '';
+		this.label.innerText = title;
+		return new Promise((resolve, reject) => {
+			this.resolveCurrent = resolve;
+			this.rejectCurrent = reject;
+			this.htmlElement.classList.remove('hidden');
+			// this.input.setAttribute('disabled', false);
+		});
+	}
+	resolve() {
+		this.resolveCurrent = null;
+		this.rejectCurrent = null;
+		this.htmlElement.classList.add('hidden');
+		// this.input.setAttribute('disabled', true);
+	}
+}
+
+export {
+	HTMLElement,
+	Div,
+	Span,
+	Button,
+	ButtonKeybind,
+	SelectModal,
+	InputModal,
+};
