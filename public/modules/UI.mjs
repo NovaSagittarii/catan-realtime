@@ -43,8 +43,8 @@ socket = io({ transports: ['websocket'] });
 hexgrid = hexagonGrid;
 
 const buttonStartGame = new ButtonKeybind(
-	13,
-	'Start Game (enter)',
+	220,
+	'Start Game (backslash)',
 	['startGame'],
 	() => socket.emit('start'),
 );
