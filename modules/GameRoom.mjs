@@ -11,7 +11,7 @@ function GameRoomConfiguration() {
 	const tps = 1000 / this.TICKER_INTERVAL;
 
 	this.ROLL_COOLDOWN = 3 * tps;
-	this.ROBBER_DURATION = 10 * tps;
+	this.ROBBER_DURATION = 45 * tps;
 	this.PLENTY_BONUS = 1;
 
 	this.TRADE_COST = 4;
