@@ -110,11 +110,11 @@ document.body.append(
 	new ButtonKeybind(67, 'Trade (c)', ['trade'], async () => {
 		try {
 			const from = await selectModalResource.prompt({
-				title: 'Select a resource to trade',
+				title: 'Select excess resource, trade 4 of these for something',
 				choices: ResourceNames.map((x) => '4 ' + x),
 			});
 			const to = await selectModalResource.prompt({
-				title: 'Select a resource to get for 4 ' + ResourceNames[from],
+				title: `Exchange 4 ${ResourceNames[from]} for 1 of:`,
 				choices: ResourceNames.map((x) => '1 ' + x),
 			});
 			console.log('trade %s for %s', from, to);
