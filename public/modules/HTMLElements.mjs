@@ -49,9 +49,9 @@ class SelectModal extends HTMLElement {
 		super('div', 'selectModal', 'hidden');
 		this.active = false;
 		this.choices = choices; // String[]
-		this.htmlElement.append(
-			new TextDiv(title, 'selectModalTitle').getElement(),
-		);
+		this.title = title;
+		this.titleDiv = new TextDiv(title, 'selectModalTitle').getElement();
+		this.htmlElement.append(this.titleDiv);
 		for (let i = 0; i < choices.length; i++) {
 			this.htmlElement.append(
 				new Button(`[${i + 1}] ` + choices[i], ['text-left'], () =>
@@ -61,7 +61,8 @@ class SelectModal extends HTMLElement {
 		}
 		this.htmlElement.addEventListener('click', () => this.resolve());
 	}
-	activate() {
+	prompt({ title }) {
+		this.titleDiv.innerText = title || this.title;
 		if (SelectModal.activeModal) SelectModal.activeModal.resolve();
 		return new Promise((resolve, reject) => {
 			SelectModal.activeModal = this;

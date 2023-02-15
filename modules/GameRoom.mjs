@@ -14,6 +14,7 @@ function GameRoomConfiguration() {
 	this.ROBBER_DURATION = 10 * tps;
 	this.PLENTY_BONUS = 1;
 
+	this.TRADE_COST = 4;
 	this.CARD_COST = [0, 0, 1, 1, 1];
 }
 
@@ -444,6 +445,22 @@ class GameRoom {
 						break;
 				}
 				player.cards[card] -= 1;
+				break;
+			}
+			case 'trade': {
+				const { a, b } = data;
+				if (!(a in ResourceName) || !(b in ResourceName))
+					return this.protocolViolation(
+						socket,
+						'Trade fail - invalid resource',
+					);
+				if (player.resources[a] < this.configuration.TRADE_COST)
+					return this.protocolViolation(
+						socket,
+						'Trade fail - insufficient resource',
+					);
+				player.resources[a] -= this.configuration.TRADE_COST;
+				player.resources[b] += 1;
 				break;
 			}
 		}

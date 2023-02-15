@@ -45,7 +45,7 @@ io.on('connection', function (socket) {
 	socket.on('rooms', () => {
 		socket.emit('rooms', Object.keys(rooms));
 	});
-	['ask', 'build', 'roll', 'robber', 'act'].forEach((action) => {
+	['ask', 'build', 'roll', 'robber', 'act', 'trade'].forEach((action) => {
 		socket.on(action, (data) => {
 			if (players[socket.id]) {
 				players[socket.id].handleEvent(socket, action, data);

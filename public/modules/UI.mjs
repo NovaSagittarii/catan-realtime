@@ -2,6 +2,7 @@ import { HexagonGrid } from './HexagonGrid.mjs';
 import { PlayerDisplay } from './PlayerDisplay.mjs';
 import { RollAnimator } from './RollAnimator.mjs';
 import { Button, ButtonKeybind, SelectModal } from './HTMLElements.mjs';
+import { ResourceNames } from './GraphicalConstants.mjs';
 
 const configuration = {
 	host: null,
@@ -67,7 +68,7 @@ document.body.append(buttonDevelopmentCard.getElement());
 
 const selectModalResource = new SelectModal({
 	title: 'Select a resource',
-	choices: ['Brick', 'Lumber', 'Wool', 'Grain', 'Ore'],
+	choices: ResourceNames,
 });
 const selectModalCard = new SelectModal({
 	title: 'Select a card to use',
@@ -76,12 +77,12 @@ const selectModalCard = new SelectModal({
 document.body.append(
 	new ButtonKeybind(88, 'Play card (x)', ['useCard'], async () => {
 		selectModalCard
-			.activate()
+			.prompt()
 			.then((x) => {
 				console.log('action', x);
 				if (x === 2) {
 					selectModalResource
-						.activate()
+						.prompt()
 						.then((y) => {
 							socket.emit('act', { card: 2, resource: y });
 						})
@@ -91,6 +92,25 @@ document.body.append(
 				}
 			})
 			.catch(() => console.log('cancelled choose card'));
+	}).getElement(),
+);
+document.body.append(
+	new ButtonKeybind(67, 'Trade (c)', ['trade'], async () => {
+		try {
+			const from = await selectModalResource.prompt({
+				title: 'Select a resource to trade',
+				choices: ResourceNames.map((x) => '4 ' + x),
+			});
+			const to = await selectModalResource.prompt({
+				title: 'Select a resource to get for 4 ' + ResourceNames[from],
+				choices: ResourceNames.map((x) => '1 ' + x),
+			});
+			console.log('trade %s for %s', from, to);
+			socket.emit('trade', { a: from, b: to });
+		} catch (e) {
+			// console.error(e);
+			console.log('trade aborted');
+		}
 	}).getElement(),
 );
 
