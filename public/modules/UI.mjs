@@ -197,7 +197,10 @@ socket.on('rooms', async (rooms) => {
 
 socket.emit('join', {
 	name: await inputModal.prompt('enter username'),
-	id: await inputModal.prompt('enter room name (leave empty to make new)', 'kitchen'),
+	id: await inputModal.prompt(
+		'enter room name (leave empty to make new)',
+		'kitchen',
+	),
 });
 
 // socket.on('room')
@@ -246,6 +249,10 @@ socket.on('roll', (value) => {
 });
 socket.on('time', (time) => {
 	playerDisplay.updateTime(time);
+});
+socket.on('disconnect', () => {
+	alert('disconnected from server -- reloading browser');
+	window.navigation.reload();
 });
 
 socket.emit('rooms');

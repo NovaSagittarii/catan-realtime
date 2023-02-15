@@ -107,7 +107,7 @@ class InputModal extends HTMLElement {
 		this.resolveCurrent = null;
 		this.rejectCurrent = null;
 	}
-	prompt(title, defaultValue='') {
+	prompt(title, defaultValue = '') {
 		if (this.rejectCurrent) this.rejectCurrent(); // cancel input
 		this.input.value = defaultValue;
 		this.label.innerText = title;
