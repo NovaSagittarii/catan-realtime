@@ -61,7 +61,7 @@ class SelectModal extends HTMLElement {
 		}
 		this.htmlElement.addEventListener('click', () => this.resolve());
 	}
-	prompt({ title }) {
+	prompt({ title } = {}) {
 		this.titleDiv.innerText = title || this.title;
 		if (SelectModal.activeModal) SelectModal.activeModal.resolve();
 		return new Promise((resolve, reject) => {
