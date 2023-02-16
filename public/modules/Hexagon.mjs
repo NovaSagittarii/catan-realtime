@@ -141,6 +141,7 @@ class Hexagon extends Div {
 		this.active = active;
 	}
 	initialize() {
+		this.htmlElement.classList.remove('dropShadow'); // remove robber status
 		this.elements.lines.forEach((line) => {
 			line.style.removeProperty('stroke');
 		});
