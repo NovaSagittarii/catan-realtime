@@ -380,10 +380,10 @@ class GameRoom {
 
 				player.queued.robber -= 1;
 				if (robberAdd) {
-					robberAdd.setRobber(
-						this.game.getTime() + this.configuration.ROBBER_DURATION,
-					);
-					this.broadcast('gridStatus', { x: x1, y: y1, a: false });
+					const robberExistsUntil =
+						this.game.getTime() + this.configuration.ROBBER_DURATION;
+					robberAdd.setRobber(robberExistsUntil);
+					this.broadcast('gridStatus', { x: x1, y: y1, r: robberExistsUntil });
 				} else if (!robberRemove) {
 					return this.protocolViolation(
 						socket,
@@ -392,7 +392,7 @@ class GameRoom {
 				}
 				if (robberRemove) {
 					robberRemove.clearRobber();
-					this.broadcast('gridStatus', { x: x2, y: y2, a: true });
+					this.broadcast('gridStatus', { x: x2, y: y2, r: -1 });
 				}
 				break;
 			}
@@ -497,7 +497,7 @@ class GameRoom {
 			for (const [i, j, node] of this.game.getNodes()) {
 				if (node.robberActive && node.isActive(this.game.getTime())) {
 					node.clearRobber();
-					this.broadcast('gridStatus', { x: j, y: i, a: true });
+					this.broadcast('gridStatus', { x: j, y: i, r: -1 });
 				}
 			}
 			this.broadcast('roll', rollResult);

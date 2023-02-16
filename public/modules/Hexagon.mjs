@@ -86,6 +86,15 @@ class Hexagon extends Div {
 		labelDiv.append(this.label);
 		div.append(labelDiv);
 
+		const timerDiv = new Div('timer').getElement();
+		const timerBackgroundDiv = new Div('timerBackground').getElement();
+		timerDiv.style.left = (100 / 2).toFixed(0) + 'px';
+		timerDiv.style.top = ((bottom - top) / 2).toFixed(0) + 'px';
+		// timerDiv.style.display = 'none'; // controlled by if .inactive is present or not
+		this.timer = document.createTextNode('-');
+		timerDiv.append(timerBackgroundDiv, this.timer);
+		div.append(timerDiv);
+
 		this.elements = {
 			hexagon,
 			lines: [...outline.children],
@@ -111,6 +120,9 @@ class Hexagon extends Div {
 	setLabel(t) {
 		this.label.nodeValue = t;
 	}
+	setTimer(t) {
+		this.timer.nodeValue = t;
+	}
 	setBackgroundLabel(t) {
 		this.backgroundLabel.nodeValue = t;
 	}
@@ -131,12 +143,14 @@ class Hexagon extends Div {
 		this.t = t;
 		this.r = r;
 	}
-	applyStatus(active) {
+	updateStatus(remaining) {
+		const active = remaining <= 0;
 		if (active) {
 			this.htmlElement.classList.remove('dropShadow'); // don't reanimate it
 			this.htmlElement.classList.remove('inactive');
 		} else {
 			this.htmlElement.classList.add('inactive');
+			this.setTimer(Math.floor(remaining / 50)); // 50 from 1000/20 ticks per second, i think
 		}
 		this.active = active;
 	}

@@ -56,6 +56,8 @@ class HexagonGrid extends Div {
 				// if(i==-k &&j==1)console.log(h.getElement());
 			}
 		}
+		this.time = 0;
+		this.disabledNodes = [];
 	}
 	process(x, y, z) {
 		console.log(x, y, z);
@@ -70,8 +72,21 @@ class HexagonGrid extends Div {
 			}
 		}
 	}
-	applyStatus(x, y, active) {
-		this.grid[y][x].applyStatus(active);
+	applyStatus(x, y, disableUntil) {
+		this.grid[y][x].updateStatus(disableUntil - this.currentTime);
+		if (disableUntil > this.currentTime) {
+			this.disabledNodes.push([this.grid[y][x], disableUntil]);
+		}
+	}
+	updateTime(time) {
+		this.currentTime = time;
+		for (let i = this.disabledNodes.length - 1; i >= 0; i--) {
+			const [node, endTime] = this.disabledNodes[i];
+			node.updateStatus(endTime - time);
+			if (endTime <= time) {
+				this.disabledNodes.splice(i, 1);
+			}
+		}
 	}
 	sync({ x, y, z, building, playerId }) {
 		const nodeOffset = [

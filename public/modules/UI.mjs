@@ -238,10 +238,10 @@ socket.on('gridData', (gridData) => {
 		hexgrid.sync({ x, y, z, building, playerId });
 	}
 });
-socket.on('gridStatus', ({ x, y, a }) => {
-	console.log('gridStatus', { x, y, a });
-	const active = a;
-	hexgrid.applyStatus(x, y, active);
+socket.on('gridStatus', ({ x, y, r }) => {
+	console.log('gridStatus', { x, y, r });
+	const inactiveUntil = r;
+	hexgrid.applyStatus(x, y, inactiveUntil);
 });
 socket.on('roll', (value) => {
 	// console.log(value);
@@ -249,6 +249,7 @@ socket.on('roll', (value) => {
 });
 socket.on('time', (time) => {
 	playerDisplay.updateTime(time);
+	hexgrid.updateTime(time);
 });
 socket.on('disconnect', () => {
 	alert('disconnected from server -- reloading browser');
