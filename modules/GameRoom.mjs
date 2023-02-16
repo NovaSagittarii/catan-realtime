@@ -500,7 +500,7 @@ class GameRoom {
 					this.broadcast('gridStatus', { x: j, y: i, r: -1 });
 				}
 			}
-			this.broadcast('roll', rollResult);
+			this.broadcast('roll', { x: rollResult, i: player.id });
 			this.broadcast('playerData', [player.export()]);
 		}
 	}

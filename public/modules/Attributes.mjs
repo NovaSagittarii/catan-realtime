@@ -26,6 +26,17 @@ class TextAttribute extends Attribute {
 		this.textNode.nodeValue = newText;
 	}
 }
+class NotificationAttribute extends Attribute {
+	constructor(attribute, value) {
+		super('---');
+	}
+	sync(newText) {
+		this.htmlElement.innerText = newText;
+		this.htmlElement.classList.remove('flash');
+		void this.htmlElement.offsetWidth;
+		this.htmlElement.classList.add('flash');
+	}
+}
 class NumericalAttribute extends TextAttribute {
 	constructor(attribute, value) {
 		super(attribute, value);
@@ -98,6 +109,7 @@ class ListAttributeWithPreview extends ListAttribute {
 export {
 	Attribute,
 	TextAttribute,
+	NotificationAttribute,
 	NumericalAttribute,
 	CooldownAttribute,
 	ListAttribute,

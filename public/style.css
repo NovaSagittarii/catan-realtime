@@ -212,6 +212,30 @@ textarea {
 	border-left: 2px black solid;
 	border-radius: 4px;
 }
+.flash {
+	display: flex;
+	justify-content: center;
+	animation-name: flash;
+	animation-duration: 3s;
+	animation-fill-mode: forwards;
+}
+@keyframes flash {
+	0% {
+		opacity: 0;
+		transform: translateX(-2em);
+		animation-timing-function: cubic-bezier(0.17, 0.67, 0.52, 0.96);
+	}
+	10%,
+	90% {
+		opacity: 1;
+		transform: translateX(0);
+		animation-timing-function: cubic-bezier(0.17, 0.67, 0.52, 0.96);
+	}
+	100% {
+		opacity: 0;
+		transform: translateX(2em);
+	}
+}
 
 .bar {
 	background: rgba(0, 0, 0, 0.5);

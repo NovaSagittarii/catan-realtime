@@ -1,6 +1,7 @@
 import { Div, Span } from './HTMLElements.mjs';
 import {
 	TextAttribute,
+	NotificationAttribute,
 	NumericalAttribute,
 	CooldownAttribute,
 	ListAttribute,
@@ -21,6 +22,7 @@ class Player extends Div {
 			name: new TextAttribute(id, name),
 			points: new TextAttribute('Victory Points', 0),
 			nextRoll: new CooldownAttribute('next roll', 0),
+			lastRoll: new NotificationAttribute('', ''),
 			roll: new TextAttribute('rolling?', 0),
 			robber: new NumericalAttribute('Robbers to place', 0),
 			road: new NumericalAttribute('Roads to place', 0),

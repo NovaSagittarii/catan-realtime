@@ -243,9 +243,11 @@ socket.on('gridStatus', ({ x, y, r }) => {
 	const inactiveUntil = r;
 	hexgrid.applyStatus(x, y, inactiveUntil);
 });
-socket.on('roll', (value) => {
+socket.on('roll', ({ x, i }) => {
+	const [value, id] = [x, i];
 	// console.log(value);
 	rollResults.processRoll(value);
+	playerDisplay.sync({ id: i, lastRoll: value });
 });
 socket.on('time', (time) => {
 	playerDisplay.updateTime(time);
